@@ -1,0 +1,31 @@
+.formulario {
+  max-width: 920px;
+}
+
+.cabecalho-detalhe {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.destaque {
+  color: var(--verde);
+}
+
+.grade label strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.observacao-detalhe {
+  grid-column: 1 / -1;
+}
+
+.acoes-formulario {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}

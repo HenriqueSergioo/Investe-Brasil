@@ -1,0 +1,28 @@
+<section id="page-login">
+  <div class="painel-marca">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <h1>InvesteBrasil</h1>
+    <p>Acompanhe seus investimentos, rendimentos e resgates em um só lugar.</p>
+  </div>
+
+  <form id="card-login" (ngSubmit)="acessar()">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <h2>Entrar</h2>
+    <p>Use sua conta para acessar o painel.</p>
+
+    <label>
+      Usuário
+      <input type="text" name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
+    </label>
+    <label>
+      Senha
+      <input type="password" name="senha" [(ngModel)]="senha" autocomplete="current-password" required>
+    </label>
+
+    <button type="submit" class="botao primario" [disabled]="carregando">
+      {{ carregando ? 'Entrando...' : 'Acessar' }}
+    </button>
+
+    <small>Demonstração: <strong>henrique</strong> / <strong>123456</strong></small>
+  </form>
+</section>

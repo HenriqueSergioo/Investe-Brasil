@@ -1,0 +1,35 @@
+<aside class="app-sidebar">
+  <a routerLink="/investimentos" class="app-sidebar-logo">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <span>InvesteBrasil</span>
+  </a>
+
+  <nav class="app-sidebar-menu">
+    <a
+      *ngFor="let item of menu"
+      class="menu-link"
+      [routerLink]="item.link"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.exato }">
+      <span class="menu-icon" [attr.data-icone]="item.icone"></span>
+      <span class="menu-title">{{ item.title }}</span>
+    </a>
+  </nav>
+
+  <div class="app-sidebar-footer">
+    <strong>{{ nome }}</strong>
+    <button type="button" (click)="sair()">Sair</button>
+  </div>
+</aside>
+
+<div class="app-main">
+  <header class="app-header">
+    <h1>{{ tituloPagina() }}</h1>
+    <div class="usuario">
+      <span class="avatar"></span>
+    </div>
+  </header>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

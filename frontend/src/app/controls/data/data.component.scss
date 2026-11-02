@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  min-width: 170px;
+}
+
+.app-data {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.app-data-campo {
+  position: relative;
+}
+
+.app-data-campo input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.app-data-icone {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--verde);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.app-data-icone svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.app-data-calendario {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 280px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.12);
+  padding: 12px;
+}
+
+.app-data-calendario header,
+.app-data-calendario footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-data-calendario header button,
+.app-data-calendario footer button {
+  border: 0;
+  background: transparent;
+  color: var(--verde);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.app-data-calendario header strong {
+  color: #1f2a36;
+}
+
+.app-data-semana,
+.app-data-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.app-data-semana span {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.app-data-dias button {
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: #1f2a36;
+}
+
+.app-data-dias button.outro {
+  color: #c4c8ce;
+}
+
+.app-data-dias button.selecionado {
+  background: var(--verde);
+  color: #fff;
+}
+
+.app-data-dias button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}

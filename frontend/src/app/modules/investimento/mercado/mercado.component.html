@@ -1,0 +1,41 @@
+<section class="page" *ngIf="carregado">
+  <article class="card">
+    <h2>Leitura da carteira</h2>
+    <p class="rotulo">As cotações não ficam soltas: a Selic compara o rendimento contratado e o câmbio converte o saldo da carteira.</p>
+  </article>
+
+  <article class="card">
+    <span class="rotulo">Comparar com a Selic</span>
+    <p class="objetivo">Objetivo: ver se a taxa de 0,52% ao mês da carteira está perto do juro básico do país.</p>
+    <div class="grade numeros">
+      <label>Taxa da carteira <strong>{{ formatarTaxa(painel.taxaAnualCarteira) }}</strong></label>
+      <label>Selic hoje <strong>{{ formatarTaxa(painel.selicAnual) }}</strong></label>
+      <label>Diferença <strong [class.alta]="(painel.diferencaPontos ?? 0) > 0" [class.baixa]="(painel.diferencaPontos ?? 0) < 0">{{ formatarPontos(painel.diferencaPontos) }}</strong></label>
+    </div>
+    <p class="leitura">{{ painel.comparativoSelic }}</p>
+  </article>
+
+  <article class="card">
+    <span class="rotulo">Converter o saldo</span>
+    <p class="objetivo">Objetivo: traduzir o patrimônio atual em dólar, euro e bitcoin, usando a cotação do dia.</p>
+    <div class="grade numeros">
+      <label>Saldo em real <strong>{{ formatarMoeda(painel.saldoCarteira) }}</strong></label>
+      <label>
+        Em dólar
+        <strong>{{ formatarDolar(painel.saldoEmDolar) }}</strong>
+        <small [class]="classeVariacao(painel.variacaoDolar)">{{ formatarVariacao(painel.variacaoDolar) }}</small>
+      </label>
+      <label>
+        Em euro
+        <strong>{{ formatarEuro(painel.saldoEmEuro) }}</strong>
+        <small [class]="classeVariacao(painel.variacaoEuro)">{{ formatarVariacao(painel.variacaoEuro) }}</small>
+      </label>
+      <label>
+        Em bitcoin
+        <strong>{{ formatarBitcoin(painel.saldoEmBitcoin) }}</strong>
+        <small [class]="classeVariacao(painel.variacaoBitcoin)">{{ formatarVariacao(painel.variacaoBitcoin) }}</small>
+      </label>
+    </div>
+    <p class="leitura">{{ painel.leituraCambio }}</p>
+  </article>
+</section>

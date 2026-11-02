@@ -1,0 +1,52 @@
+<label class="app-data" [class.aberto]="aberto">
+  <span *ngIf="titulo" class="app-data-titulo">{{ titulo }}</span>
+
+  <div class="app-data-campo">
+    <input
+      type="text"
+      [name]="name"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [required]="required"
+      [value]="texto"
+      maxlength="10"
+      autocomplete="off"
+      (focus)="abrir()"
+      (input)="aoDigitar($any($event.target).value)">
+
+    <button type="button" class="app-data-icone" [disabled]="disabled" (click)="abrir()" title="Abrir calendário">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3V2zm12 8H5v9h14v-9zM5 7h14V6H5v1z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="app-data-calendario" *ngIf="aberto && !disabled">
+    <header>
+      <button type="button" (click)="mesAnterior()">‹</button>
+      <strong>{{ meses[mesVisivel] }} {{ anoVisivel }}</strong>
+      <button type="button" (click)="proximoMes()">›</button>
+    </header>
+
+    <div class="app-data-semana">
+      <span *ngFor="let dia of diasSemana">{{ dia }}</span>
+    </div>
+
+    <div class="app-data-dias">
+      <button
+        type="button"
+        *ngFor="let dia of diasDoCalendario"
+        [class.outro]="dia.outroMes"
+        [class.selecionado]="dia.selecionado"
+        [disabled]="dia.desabilitado"
+        (click)="selecionar(dia.iso)">
+        {{ dia.rotulo }}
+      </button>
+    </div>
+
+    <footer>
+      <button type="button" (click)="limpar()">Limpar</button>
+      <button type="button" (click)="hoje()">Hoje</button>
+    </footer>
+  </div>
+</label>
