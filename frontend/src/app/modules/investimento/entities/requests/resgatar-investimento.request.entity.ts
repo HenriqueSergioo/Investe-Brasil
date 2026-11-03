@@ -1,5 +1,5 @@
 export class ResgatarInvestimentoRequestEntity {
-  id = 0;
+  codigoInvestimento = 0;
   dataResgate = '';
 
   constructor(init?: Partial<ResgatarInvestimentoRequestEntity>) {

@@ -17,7 +17,7 @@ export class LayoutComponent {
   ) {}
 
   get nome(): string {
-    return this.session.sessao?.nome ?? '';
+    return this.session.sessao?.nomeUsuario ?? '';
   }
 
   tituloPagina(): string {
@@ -27,10 +27,6 @@ export class LayoutComponent {
 
     if (this.router.url.includes('/resgatar')) {
       return 'Resgatar';
-    }
-
-    if (this.router.url.includes('/mercado')) {
-      return 'Mercado';
     }
 
     return 'Investimentos';

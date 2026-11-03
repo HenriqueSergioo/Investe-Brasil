@@ -73,6 +73,16 @@
   margin-top: 8px;
 }
 
+.link-cadastro {
+  border: 0;
+  background: transparent;
+  color: var(--verde);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+}
+
 @media (max-width: 900px) {
   #page-login {
     grid-template-columns: 1fr;

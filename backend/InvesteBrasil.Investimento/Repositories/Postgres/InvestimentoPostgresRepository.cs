@@ -1,142 +1,153 @@
 using InvesteBrasil.Investimento.Entities;
 using InvesteBrasil.Investimento.Enums;
+using InvesteBrasil.Investimento.Repositories.Postgres.Abstracts;
 using InvesteBrasil.Investimento.Repositories.Postgres.Interfaces;
 using InvesteBrasil.Investimento.Repositories.Postgres.Queries;
-using Npgsql;
+using NpgsqlTypes;
 
 namespace InvesteBrasil.Investimento.Repositories.Postgres
 {
-    public class InvestimentoPostgresRepository : IInvestimentoRepository
+    public class InvestimentoPostgresRepository : PostgresRepository, IInvestimentoRepository
     {
-        private readonly PostgresDbContext dbContext;
-
         public InvestimentoPostgresRepository(PostgresDbContext dbContext)
+            : base(dbContext)
         {
-            this.dbContext = dbContext;
         }
 
         public async Task GarantirEsquemaAsync()
         {
-            await dbContext.AbrirAsync();
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.GarantirEsquema, dbContext.Connection);
-            await command.ExecuteNonQueryAsync();
+            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarTabela);
+            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.MigrarColunas);
+            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarColunas);
+            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.RemoverCompartilhados);
+            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarIndices);
         }
 
         public async Task<InvestimentoEntity> IncluirAsync(InvestimentoEntity entity)
         {
-            await dbContext.AbrirAsync();
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.Incluir, dbContext.Connection);
-            command.Parameters.AddWithValue("proprietario", entity.Proprietario.Trim());
-            command.Parameters.AddWithValue("dataCriacao", entity.DataCriacao);
-            command.Parameters.AddWithValue("valorInicial", entity.ValorInicial);
-            command.Parameters.AddWithValue("cpf", string.IsNullOrWhiteSpace(entity.Cpf) ? DBNull.Value : entity.Cpf);
-            command.Parameters.AddWithValue("tipoInvestimento", (object?)entity.TipoInvestimento ?? DBNull.Value);
-            command.Parameters.AddWithValue("instituicao", (object?)entity.Instituicao ?? DBNull.Value);
-            command.Parameters.AddWithValue("liquidez", (object?)entity.Liquidez ?? DBNull.Value);
-            command.Parameters.AddWithValue("dataVencimento", entity.DataVencimento.HasValue ? entity.DataVencimento.Value : DBNull.Value);
-            command.Parameters.AddWithValue("objetivo", (object?)entity.Objetivo ?? DBNull.Value);
-            command.Parameters.AddWithValue("observacao", (object?)entity.Observacao ?? DBNull.Value);
-            command.Parameters.AddWithValue("situacao", entity.Situacao);
-            entity.Id = (long)(await command.ExecuteScalarAsync() ?? 0);
+            var codigoInvestimento = await ExecuteScalarAsync(
+                InvestimentoPostgresQuery.Incluir,
+                Parametro("codigoUsuario", entity.CodigoUsuario),
+                Parametro("nomeProprietario", entity.NomeProprietario.Trim()),
+                Parametro("dataCriacao", NpgsqlDbType.Date, entity.DataCriacao),
+                Parametro("valorInicial", entity.ValorInicial),
+                Parametro("numeroCpf", string.IsNullOrWhiteSpace(entity.NumeroCpf) ? null : entity.NumeroCpf),
+                Parametro("descricaoTipoInvestimento", entity.DescricaoTipoInvestimento),
+                Parametro("nomeInstituicao", entity.NomeInstituicao),
+                Parametro("descricaoLiquidez", entity.DescricaoLiquidez),
+                Parametro("dataVencimento", NpgsqlDbType.Date, entity.DataVencimento.HasValue ? entity.DataVencimento.Value : null),
+                Parametro("descricaoObjetivo", entity.DescricaoObjetivo),
+                Parametro("descricaoObservacao", entity.DescricaoObservacao),
+                Parametro("situacaoInvestimento", entity.SituacaoInvestimento));
+
+            entity.CodigoInvestimento = Convert.ToInt64(codigoInvestimento ?? 0);
             return entity;
         }
 
-        public async Task<InvestimentoEntity?> ConsultarPorIdAsync(long id)
+        public async Task<InvestimentoEntity?> ConsultarPorIdAsync(long codigoInvestimento, long codigoUsuario)
         {
-            await dbContext.AbrirAsync();
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.ConsultarPorId, dbContext.Connection);
-            command.Parameters.AddWithValue("id", id);
-            await using var reader = await command.ExecuteReaderAsync();
-            if (!await reader.ReadAsync())
+            await using var dataReader = await ExecuteReaderAsync(
+                InvestimentoPostgresQuery.ConsultarPorId,
+                Parametro("codigoInvestimento", codigoInvestimento),
+                Parametro("codigoUsuario", codigoUsuario));
+
+            if (!await dataReader.ReadAsync())
                 return null;
 
-            return Mapear(reader);
+            return Mapear(dataReader);
         }
 
         public async Task<(IEnumerable<InvestimentoEntity> Itens, int Total)> ConsultarAsync(
-            string? proprietario,
+            long codigoUsuario,
+            string? nomeProprietario,
             DateOnly? dataInicial,
             DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina)
         {
-            await dbContext.AbrirAsync();
+            var total = Convert.ToInt32(await ExecuteScalarAsync(
+                InvestimentoPostgresQuery.Contar,
+                Filtros(codigoUsuario, nomeProprietario, dataInicial, dataFinal)) ?? 0);
 
-            await using var countCommand = new NpgsqlCommand(InvestimentoPostgresQuery.Contar, dbContext.Connection);
-            AdicionarFiltros(countCommand, proprietario, dataInicial, dataFinal);
-            var total = Convert.ToInt32(await countCommand.ExecuteScalarAsync());
-
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.Consultar, dbContext.Connection);
-            AdicionarFiltros(command, proprietario, dataInicial, dataFinal);
-            command.Parameters.AddWithValue("tamanhoPagina", tamanhoPagina);
-            command.Parameters.AddWithValue("offset", (pagina - 1) * tamanhoPagina);
+            var parametrosConsulta = Filtros(codigoUsuario, nomeProprietario, dataInicial, dataFinal)
+                .Concat(
+                [
+                    Parametro("tamanhoPagina", tamanhoPagina),
+                    Parametro("offset", (pagina - 1) * tamanhoPagina)
+                ])
+                .ToArray();
 
             var itens = new List<InvestimentoEntity>();
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                itens.Add(Mapear(reader));
+            await using var dataReader = await ExecuteReaderAsync(InvestimentoPostgresQuery.Consultar, parametrosConsulta);
+            while (await dataReader.ReadAsync())
+                itens.Add(Mapear(dataReader));
 
             return (itens, total);
         }
 
-        public async Task<IEnumerable<InvestimentoEntity>> ConsultarAtivosAsync()
+        public async Task<IEnumerable<InvestimentoEntity>> ConsultarAtivosAsync(long codigoUsuario)
         {
-            await dbContext.AbrirAsync();
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.ConsultarAtivos, dbContext.Connection);
-            command.Parameters.AddWithValue("situacao", SituacaoInvestimento.Investido);
-
             var itens = new List<InvestimentoEntity>();
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                itens.Add(Mapear(reader));
+            await using var dataReader = await ExecuteReaderAsync(
+                InvestimentoPostgresQuery.ConsultarAtivos,
+                Parametro("codigoUsuario", codigoUsuario),
+                Parametro("situacaoInvestimento", SituacaoInvestimento.Investido));
+
+            while (await dataReader.ReadAsync())
+                itens.Add(Mapear(dataReader));
 
             return itens;
         }
 
-        public async Task ResgatarAsync(long id, DateOnly dataResgate)
+        public async Task ResgatarAsync(long codigoInvestimento, long codigoUsuario, DateOnly dataResgate)
         {
-            await dbContext.AbrirAsync();
-            await using var command = new NpgsqlCommand(InvestimentoPostgresQuery.Resgatar, dbContext.Connection);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("dataResgate", dataResgate);
-            command.Parameters.AddWithValue("situacao", SituacaoInvestimento.Resgatado);
-            await command.ExecuteNonQueryAsync();
+            await ExecuteNonQueryAsync(
+                InvestimentoPostgresQuery.Resgatar,
+                Parametro("codigoInvestimento", codigoInvestimento),
+                Parametro("codigoUsuario", codigoUsuario),
+                Parametro("dataResgate", NpgsqlDbType.Date, dataResgate),
+                Parametro("situacaoInvestimento", SituacaoInvestimento.Resgatado));
         }
 
-        private static void AdicionarFiltros(NpgsqlCommand command, string? proprietario, DateOnly? dataInicial, DateOnly? dataFinal)
+        private Npgsql.NpgsqlParameter[] Filtros(long codigoUsuario, string? nomeProprietario, DateOnly? dataInicial, DateOnly? dataFinal)
         {
-            command.Parameters.AddWithValue("proprietario", string.IsNullOrWhiteSpace(proprietario) ? DBNull.Value : proprietario.Trim());
-            command.Parameters.AddWithValue("dataInicial", dataInicial.HasValue ? dataInicial.Value : DBNull.Value);
-            command.Parameters.AddWithValue("dataFinal", dataFinal.HasValue ? dataFinal.Value : DBNull.Value);
+            return
+            [
+                Parametro("codigoUsuario", codigoUsuario),
+                Parametro("nomeProprietario", NpgsqlDbType.Varchar, string.IsNullOrWhiteSpace(nomeProprietario) ? null : nomeProprietario.Trim()),
+                Parametro("dataInicial", NpgsqlDbType.Date, dataInicial.HasValue ? dataInicial.Value : null),
+                Parametro("dataFinal", NpgsqlDbType.Date, dataFinal.HasValue ? dataFinal.Value : null)
+            ];
         }
 
-        private static string LerTexto(NpgsqlDataReader reader, string campo)
+        private static string LerTexto(Npgsql.NpgsqlDataReader reader, string campo)
         {
             var ordinal = reader.GetOrdinal(campo);
             return reader.IsDBNull(ordinal) ? string.Empty : reader.GetString(ordinal);
         }
 
-        private static InvestimentoEntity Mapear(NpgsqlDataReader reader)
+        private static InvestimentoEntity Mapear(Npgsql.NpgsqlDataReader reader)
         {
             return new InvestimentoEntity
             {
-                Id = reader.GetInt64(reader.GetOrdinal("id")),
-                Proprietario = reader.GetString(reader.GetOrdinal("proprietario")),
-                DataCriacao = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("data_criacao"))),
-                ValorInicial = reader.GetDecimal(reader.GetOrdinal("valor_inicial")),
-                Cpf = LerTexto(reader, "cpf"),
-                TipoInvestimento = LerTexto(reader, "tipo_investimento"),
-                Instituicao = LerTexto(reader, "instituicao"),
-                Liquidez = LerTexto(reader, "liquidez"),
-                DataVencimento = reader.IsDBNull(reader.GetOrdinal("data_vencimento"))
+                CodigoInvestimento = reader.GetInt64(reader.GetOrdinal("COD_INVESTIMENTO")),
+                CodigoUsuario = reader.GetInt64(reader.GetOrdinal("COD_USUARIO")),
+                NomeProprietario = reader.GetString(reader.GetOrdinal("NOM_PROPRIETARIO")),
+                DataCriacao = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_CRIACAO"))),
+                ValorInicial = reader.GetDecimal(reader.GetOrdinal("VLR_INICIAL")),
+                NumeroCpf = LerTexto(reader, "NUM_CPF"),
+                DescricaoTipoInvestimento = LerTexto(reader, "DES_TIPO_INVESTIMENTO"),
+                NomeInstituicao = LerTexto(reader, "NOM_INSTITUICAO"),
+                DescricaoLiquidez = LerTexto(reader, "DES_LIQUIDEZ"),
+                DataVencimento = reader.IsDBNull(reader.GetOrdinal("DAT_VENCIMENTO"))
                     ? null
-                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("data_vencimento"))),
-                Objetivo = LerTexto(reader, "objetivo"),
-                Observacao = LerTexto(reader, "observacao"),
-                DataResgate = reader.IsDBNull(reader.GetOrdinal("data_resgate"))
+                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_VENCIMENTO"))),
+                DescricaoObjetivo = LerTexto(reader, "DES_OBJETIVO"),
+                DescricaoObservacao = LerTexto(reader, "DES_OBSERVACAO"),
+                DataResgate = reader.IsDBNull(reader.GetOrdinal("DAT_RESGATE"))
                     ? null
-                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("data_resgate"))),
-                Situacao = reader.GetString(reader.GetOrdinal("situacao"))
+                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_RESGATE"))),
+                SituacaoInvestimento = reader.GetString(reader.GetOrdinal("STA_INVESTIMENTO"))
             };
         }
     }

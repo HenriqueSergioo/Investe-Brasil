@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 const CHAVE = 'investebrasil.sessao';
 
 export interface SessaoUsuario {
-  id: number;
-  nome: string;
-  usuario: string;
+  codigoUsuario: number;
+  nomeUsuario: string;
+  descricaoUsuario: string;
   token: string;
 }
 

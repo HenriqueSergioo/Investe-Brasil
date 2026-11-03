@@ -101,8 +101,10 @@ namespace InvesteBrasil.Investimento.Api
             app.MapControllers();
 
             using var scope = app.Services.CreateScope();
-            var repositorio = scope.ServiceProvider.GetRequiredService<IInvestimentoRepository>();
-            repositorio.GarantirEsquemaAsync().GetAwaiter().GetResult();
+            var investimentoRepository = scope.ServiceProvider.GetRequiredService<IInvestimentoRepository>();
+            var usuarioRepository = scope.ServiceProvider.GetRequiredService<IUsuarioRepository>();
+            usuarioRepository.GarantirEsquemaAsync().GetAwaiter().GetResult();
+            investimentoRepository.GarantirEsquemaAsync().GetAwaiter().GetResult();
         }
     }
 }

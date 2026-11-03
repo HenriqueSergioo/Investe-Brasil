@@ -16,9 +16,9 @@
       <tbody>
         <tr *ngFor="let item of investimentos">
           <td>{{ formatarData(item.dataCriacao) }}</td>
-          <td>{{ item.proprietario }}</td>
+          <td>{{ item.nomeProprietario }}</td>
           <td>{{ formatarMoeda(item.valorInicial) }}</td>
-          <td>{{ formatarMoeda(item.saldoAtual) }}</td>
+          <td>{{ formatarMoeda(item.valorSaldoAtual) }}</td>
           <td class="acoes">
             <button type="button" class="botao-icone perigo" title="Resgatar" (click)="resgatar(item)">
               <svg viewBox="0 0 24 24" aria-hidden="true">

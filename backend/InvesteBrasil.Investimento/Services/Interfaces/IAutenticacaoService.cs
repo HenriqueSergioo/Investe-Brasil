@@ -6,6 +6,8 @@ namespace InvesteBrasil.Investimento.Services.Interfaces
 {
     public interface IAutenticacaoService
     {
-        IResultadoValidacao<UsuarioAutenticadoEntity> Entrar(EntrarRequestEntity request);
+        Task<IResultadoValidacao<UsuarioAutenticadoEntity>> EntrarAsync(EntrarRequestEntity request);
+
+        Task<IResultadoValidacao<UsuarioAutenticadoEntity>> CadastrarUsuarioAsync(CadastrarUsuarioRequestEntity request);
     }
 }

@@ -4,7 +4,6 @@ import { take } from 'rxjs';
 import { formatarData, formatarMoeda } from '../../../shared/formatacao';
 import { InvestimentoListagemEntity } from '../entities/investimento-listagem.entity';
 import { PaginacaoEntity } from '../entities/paginacao.entity';
-import { PainelMercadoEntity } from '../entities/painel-mercado.entity';
 import { InvestimentoService } from '../services/investimento.service';
 
 @Component({
@@ -14,13 +13,12 @@ import { InvestimentoService } from '../services/investimento.service';
 })
 export class ListarInvestimentoComponent implements OnInit {
   saldo = 0;
-  proprietario = '';
+  nomeProprietario = '';
   dataInicial = '';
   dataFinal = '';
   pagina = 1;
   tamanhoPagina = 5;
   paginacao = new PaginacaoEntity<InvestimentoListagemEntity>();
-  painel?: PainelMercadoEntity;
 
   constructor(
     private investimentoService: InvestimentoService,
@@ -37,7 +35,7 @@ export class ListarInvestimentoComponent implements OnInit {
       .subscribe(retorno => this.saldo = retorno.saldo);
 
     this.investimentoService.consultarInvestimentos(
-      this.proprietario,
+      this.nomeProprietario,
       this.dataInicial,
       this.dataFinal,
       this.pagina,
@@ -45,13 +43,6 @@ export class ListarInvestimentoComponent implements OnInit {
     )
       .pipe(take(1))
       .subscribe(retorno => this.paginacao = retorno);
-
-    this.investimentoService.consultarMercado()
-      .pipe(take(1))
-      .subscribe({
-        next: painel => this.painel = painel,
-        error: () => this.painel = undefined
-      });
   }
 
   filtrar(): void {
@@ -73,34 +64,13 @@ export class ListarInvestimentoComponent implements OnInit {
   }
 
   visualizar(item: InvestimentoListagemEntity): void {
-    this.router.navigate(['/investimentos', item.id]);
+    this.router.navigate(['/investimentos', item.codigoInvestimento]);
   }
 
   resgatar(item: InvestimentoListagemEntity): void {
-    this.router.navigate(['/investimentos', item.id, 'resgatar']);
-  }
-
-  abrirMercado(): void {
-    this.router.navigate(['/investimentos/mercado']);
+    this.router.navigate(['/investimentos', item.codigoInvestimento, 'resgatar']);
   }
 
   formatarMoeda = formatarMoeda;
   formatarData = formatarData;
-
-  formatarPontos(valor?: number | null): string {
-    if (valor == null) {
-      return '-';
-    }
-
-    const sinal = valor > 0 ? '+' : '';
-    return `${sinal}${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} p.p. vs Selic`;
-  }
-
-  formatarDolar(valor?: number | null): string {
-    if (valor == null) {
-      return '-';
-    }
-
-    return `US$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  }
 }

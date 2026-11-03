@@ -1,12 +1,12 @@
 export class InvestimentoListagemEntity {
-  id = 0;
-  proprietario = '';
-  tipoInvestimento = '';
-  instituicao = '';
+  codigoInvestimento = 0;
+  nomeProprietario = '';
+  descricaoTipoInvestimento = '';
+  nomeInstituicao = '';
   dataCriacao = '';
   valorInicial = 0;
-  saldoAtual = 0;
-  situacao = '';
+  valorSaldoAtual = 0;
+  situacaoInvestimento = '';
 
   constructor(init?: Partial<InvestimentoListagemEntity>) {
     Object.assign(this, init);

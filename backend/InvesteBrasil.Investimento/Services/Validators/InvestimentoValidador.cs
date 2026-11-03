@@ -13,10 +13,10 @@ namespace InvesteBrasil.Investimento.Services.Validators
             if (request == null)
                 return Erro("Os dados do investimento são obrigatórios.");
 
-            if (string.IsNullOrWhiteSpace(request.Proprietario))
+            if (string.IsNullOrWhiteSpace(request.NomeProprietario))
                 return Erro("O proprietário é obrigatório.");
 
-            if (request.Proprietario.Trim().Length > 200)
+            if (request.NomeProprietario.Trim().Length > 200)
                 return Erro("O proprietário deve ter no máximo 200 caracteres.");
 
             if (request.ValorInicial <= 0)
@@ -25,19 +25,19 @@ namespace InvesteBrasil.Investimento.Services.Validators
             if (request.DataCriacao > hoje)
                 return Erro("A data de criação não pode ser futura.");
 
-            if (string.IsNullOrWhiteSpace(request.Cpf) || SomenteNumeros(request.Cpf).Length != 11)
+            if (string.IsNullOrWhiteSpace(request.NumeroCpf) || SomenteNumeros(request.NumeroCpf).Length != 11)
                 return Erro("Informe um CPF válido.");
 
-            if (string.IsNullOrWhiteSpace(request.TipoInvestimento))
+            if (string.IsNullOrWhiteSpace(request.DescricaoTipoInvestimento))
                 return Erro("Informe o tipo do investimento.");
 
-            if (string.IsNullOrWhiteSpace(request.Instituicao))
+            if (string.IsNullOrWhiteSpace(request.NomeInstituicao))
                 return Erro("Informe a instituição.");
 
-            if (string.IsNullOrWhiteSpace(request.Liquidez))
+            if (string.IsNullOrWhiteSpace(request.DescricaoLiquidez))
                 return Erro("Informe a liquidez.");
 
-            if (string.IsNullOrWhiteSpace(request.Objetivo))
+            if (string.IsNullOrWhiteSpace(request.DescricaoObjetivo))
                 return Erro("Informe o objetivo do investimento.");
 
             if (request.DataVencimento.HasValue && request.DataVencimento.Value < request.DataCriacao)
@@ -46,9 +46,9 @@ namespace InvesteBrasil.Investimento.Services.Validators
             return Sucesso();
         }
 
-        public IResultadoValidacao ConsultarInvestimento(long id)
+        public IResultadoValidacao ConsultarInvestimento(long codigoInvestimento)
         {
-            if (id <= 0)
+            if (codigoInvestimento <= 0)
                 return Erro("Identificador do investimento inválido.");
 
             return Sucesso();
@@ -59,13 +59,13 @@ namespace InvesteBrasil.Investimento.Services.Validators
             if (request == null)
                 return Erro("Os dados do resgate são obrigatórios.");
 
-            if (request.Id <= 0)
+            if (request.CodigoInvestimento <= 0)
                 return Erro("Identificador do investimento inválido.");
 
             if (investimento == null)
                 return Erro("Investimento não encontrado.");
 
-            if (investimento.Situacao == SituacaoInvestimento.Resgatado)
+            if (investimento.SituacaoInvestimento == SituacaoInvestimento.Resgatado)
                 return Erro("Este investimento já foi resgatado.");
 
             if (request.DataResgate > hoje)

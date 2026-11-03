@@ -12,13 +12,13 @@ import { InvestimentoService } from '../services/investimento.service';
   styleUrls: ['./criar-investimento.component.scss']
 })
 export class CriarInvestimentoComponent {
-  proprietario = '';
-  cpf = '';
-  tipoInvestimento = '';
-  instituicao = '';
-  liquidez = '';
-  objetivo = '';
-  observacao = '';
+  nomeProprietario = '';
+  numeroCpf = '';
+  descricaoTipoInvestimento = '';
+  nomeInstituicao = '';
+  descricaoLiquidez = '';
+  descricaoObjetivo = '';
+  descricaoObservacao = '';
   dataCriacao = hojeIso();
   dataVencimento = '';
   hoje = hojeIso();
@@ -37,33 +37,33 @@ export class CriarInvestimentoComponent {
   mascararCpf(valor: string): void {
     const numeros = valor.replace(/\D/g, '').slice(0, 11);
     if (numeros.length <= 3) {
-      this.cpf = numeros;
+      this.numeroCpf = numeros;
     } else if (numeros.length <= 6) {
-      this.cpf = `${numeros.slice(0, 3)}.${numeros.slice(3)}`;
+      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3)}`;
     } else if (numeros.length <= 9) {
-      this.cpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6)}`;
+      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6)}`;
     } else {
-      this.cpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6, 9)}-${numeros.slice(9)}`;
+      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6, 9)}-${numeros.slice(9)}`;
     }
   }
 
   salvar(): void {
-    if (!this.proprietario.trim()) {
+    if (!this.nomeProprietario.trim()) {
       this.alertService.erro('Informe o proprietário.');
       return;
     }
 
-    if (this.cpf.replace(/\D/g, '').length !== 11) {
+    if (this.numeroCpf.replace(/\D/g, '').length !== 11) {
       this.alertService.erro('Informe um CPF válido.');
       return;
     }
 
-    if (!this.tipoInvestimento) {
+    if (!this.descricaoTipoInvestimento) {
       this.alertService.erro('Informe o tipo do investimento.');
       return;
     }
 
-    if (!this.instituicao.trim()) {
+    if (!this.nomeInstituicao.trim()) {
       this.alertService.erro('Informe a instituição.');
       return;
     }
@@ -78,27 +78,27 @@ export class CriarInvestimentoComponent {
       return;
     }
 
-    if (!this.liquidez) {
+    if (!this.descricaoLiquidez) {
       this.alertService.erro('Informe a liquidez.');
       return;
     }
 
-    if (!this.objetivo) {
+    if (!this.descricaoObjetivo) {
       this.alertService.erro('Informe o objetivo.');
       return;
     }
 
     const request = new IncluirInvestimentoRequestEntity({
-      proprietario: this.proprietario.trim(),
-      cpf: this.cpf,
-      tipoInvestimento: this.tipoInvestimento,
-      instituicao: this.instituicao.trim(),
+      nomeProprietario: this.nomeProprietario.trim(),
+      numeroCpf: this.numeroCpf,
+      descricaoTipoInvestimento: this.descricaoTipoInvestimento,
+      nomeInstituicao: this.nomeInstituicao.trim(),
       dataCriacao: this.dataCriacao,
       valorInicial: this.valorInicial,
-      liquidez: this.liquidez,
+      descricaoLiquidez: this.descricaoLiquidez,
       dataVencimento: this.dataVencimento || null,
-      objetivo: this.objetivo,
-      observacao: this.observacao.trim()
+      descricaoObjetivo: this.descricaoObjetivo,
+      descricaoObservacao: this.descricaoObservacao.trim()
     });
 
     this.investimentoService.incluirInvestimento(request)

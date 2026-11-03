@@ -5,16 +5,16 @@
     <form (ngSubmit)="salvar()">
       <div class="grade">
         <label>
-          ID
-          <input type="text" [value]="detalhe.id" disabled>
+          Código
+          <input type="text" [value]="detalhe.codigoInvestimento" disabled>
         </label>
         <label>
           Proprietário
-          <input type="text" [value]="detalhe.proprietario" disabled>
+          <input type="text" [value]="detalhe.nomeProprietario" disabled>
         </label>
         <label>
           Valor
-          <input type="text" [value]="formatarMoeda(detalhe.saldoEsperado)" disabled>
+          <input type="text" [value]="formatarMoeda(detalhe.valorSaldoEsperado)" disabled>
         </label>
         <app-data
           titulo="Data do resgate"
@@ -28,7 +28,7 @@
       </div>
 
       <div class="simulacao">
-        <p>Ganhos: <strong>{{ formatarMoeda(detalhe.ganhos) }}</strong></p>
+        <p>Ganhos: <strong>{{ formatarMoeda(detalhe.valorGanhos) }}</strong></p>
         <p>Imposto: <strong>{{ formatarMoeda(detalhe.valorImposto) }}</strong></p>
         <p>Valor líquido: <strong class="destaque">{{ formatarMoeda(detalhe.valorLiquido) }}</strong></p>
       </div>

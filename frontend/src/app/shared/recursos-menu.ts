@@ -16,11 +16,5 @@ export const RecursosMenu = [
     link: '/investimentos/resgatar',
     icone: 'saque',
     exato: false
-  },
-  {
-    title: 'Mercado',
-    link: '/investimentos/mercado',
-    icone: 'grafico',
-    exato: false
   }
 ];

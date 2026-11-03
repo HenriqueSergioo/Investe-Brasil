@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using InvesteBrasil.Infra.Services.Abstracts;
 using InvesteBrasil.Infra.Shared;
@@ -8,6 +7,8 @@ using InvesteBrasil.Infra.Shared.Interfaces;
 using InvesteBrasil.Investimento.Entities;
 using InvesteBrasil.Investimento.Entities.Requests;
 using InvesteBrasil.Investimento.Entities.Responses;
+using InvesteBrasil.Investimento.Repositories.Postgres.Interfaces;
+using InvesteBrasil.Investimento.Security;
 using InvesteBrasil.Investimento.Services.Interfaces;
 using InvesteBrasil.Investimento.Services.Validators;
 using Microsoft.Extensions.Configuration;
@@ -18,18 +19,15 @@ namespace InvesteBrasil.Investimento.Services
     public class AutenticacaoService : ServiceBase<AutenticacaoValidador>, IAutenticacaoService
     {
         private readonly IConfiguration configuration;
-        private static readonly IReadOnlyList<UsuarioEntity> Usuarios = new List<UsuarioEntity>
-        {
-            new() { Id = 1, Nome = "Henrique Santos", Usuario = "henrique", Senha = GerarHash("123456") },
-            new() { Id = 2, Nome = "Administrador", Usuario = "admin", Senha = GerarHash("admin123") }
-        };
+        private readonly IUsuarioRepository usuarioRepository;
 
-        public AutenticacaoService(IConfiguration configuration)
+        public AutenticacaoService(IConfiguration configuration, IUsuarioRepository usuarioRepository)
         {
             this.configuration = configuration;
+            this.usuarioRepository = usuarioRepository;
         }
 
-        public IResultadoValidacao<UsuarioAutenticadoEntity> Entrar(EntrarRequestEntity request)
+        public async Task<IResultadoValidacao<UsuarioAutenticadoEntity>> EntrarAsync(EntrarRequestEntity request)
         {
             try
             {
@@ -37,25 +35,56 @@ namespace InvesteBrasil.Investimento.Services
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>(validacao);
 
-                var senha = GerarHash(request.Senha);
-                var usuario = Usuarios.FirstOrDefault(x =>
-                    x.Usuario.Equals(request.Usuario.Trim(), StringComparison.OrdinalIgnoreCase) &&
-                    x.Senha == senha);
-
-                if (usuario == null)
+                var usuario = await usuarioRepository.ConsultarPorUsuarioAsync(request.Usuario);
+                var senha = HashSenha.Gerar(request.Senha);
+                if (usuario == null || usuario.DescricaoSenha != senha)
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>("Usuário ou senha inválidos.");
 
                 return new ResultadoValidacao<UsuarioAutenticadoEntity>(new UsuarioAutenticadoEntity
                 {
-                    Id = usuario.Id,
-                    Nome = usuario.Nome,
-                    Usuario = usuario.Usuario,
+                    CodigoUsuario = usuario.CodigoUsuario,
+                    NomeUsuario = usuario.NomeUsuario,
+                    DescricaoUsuario = usuario.DescricaoUsuario,
                     Token = GerarToken(usuario)
                 });
             }
             catch (Exception ex)
             {
                 return new ResultadoValidacao<UsuarioAutenticadoEntity>(ex, "[AutenticacaoService] - Erro ao tentar autenticar o usuário.");
+            }
+        }
+
+        public async Task<IResultadoValidacao<UsuarioAutenticadoEntity>> CadastrarUsuarioAsync(CadastrarUsuarioRequestEntity request)
+        {
+            try
+            {
+                var validacao = Validator.CadastrarUsuario(request);
+                if (validacao.OcorreuErro)
+                    return new ResultadoValidacao<UsuarioAutenticadoEntity>(validacao);
+
+                var existente = await usuarioRepository.ConsultarPorUsuarioAsync(request.Usuario);
+                if (existente != null)
+                    return new ResultadoValidacao<UsuarioAutenticadoEntity>("Este usuário já está cadastrado.");
+
+                var usuario = await usuarioRepository.IncluirAsync(new UsuarioEntity
+                {
+                    NomeUsuario = request.Nome.Trim(),
+                    DescricaoUsuario = request.Usuario.Trim(),
+                    DescricaoSenha = HashSenha.Gerar(request.Senha),
+                    DescricaoEmail = request.Email.Trim()
+                });
+
+                return new ResultadoValidacao<UsuarioAutenticadoEntity>(new UsuarioAutenticadoEntity
+                {
+                    CodigoUsuario = usuario.CodigoUsuario,
+                    NomeUsuario = usuario.NomeUsuario,
+                    DescricaoUsuario = usuario.DescricaoUsuario,
+                    Token = GerarToken(usuario)
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ResultadoValidacao<UsuarioAutenticadoEntity>(ex, "[AutenticacaoService] - Erro ao tentar cadastrar o usuário.");
             }
         }
 
@@ -68,22 +97,16 @@ namespace InvesteBrasil.Investimento.Services
             var token = new JwtSecurityToken(
                 issuer: jwt["Issuer"],
                 audience: jwt["Audience"],
-                claims: new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                    new Claim(ClaimTypes.Name, usuario.Nome),
-                    new Claim("usuario", usuario.Usuario)
-                },
+                claims:
+                [
+                    new Claim(ClaimTypes.NameIdentifier, usuario.CodigoUsuario.ToString()),
+                    new Claim(ClaimTypes.Name, usuario.NomeUsuario),
+                    new Claim("usuario", usuario.DescricaoUsuario)
+                ],
                 expires: DateTime.UtcNow.AddHours(8),
                 signingCredentials: credenciais);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private static string GerarHash(string senha)
-        {
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(senha));
-            return Convert.ToHexString(bytes);
         }
     }
 }

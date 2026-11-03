@@ -25,7 +25,7 @@ namespace InvesteBrasil.Investimento.Services
             this.notificacaoService = notificacaoService;
         }
 
-        public async Task<IResultadoValidacao<InvestimentoEntityResponse>> IncluirInvestimentoAsync(IncluirInvestimentoRequestEntity request)
+        public async Task<IResultadoValidacao<InvestimentoEntityResponse>> IncluirInvestimentoAsync(long codigoUsuario, IncluirInvestimentoRequestEntity request)
         {
             try
             {
@@ -36,23 +36,24 @@ namespace InvesteBrasil.Investimento.Services
 
                 var entity = new InvestimentoEntity
                 {
-                    Proprietario = request.Proprietario.Trim(),
+                    CodigoUsuario = codigoUsuario,
+                    NomeProprietario = request.NomeProprietario.Trim(),
                     DataCriacao = request.DataCriacao,
                     ValorInicial = decimal.Round(request.ValorInicial, 2, MidpointRounding.AwayFromZero),
-                    Cpf = SomenteNumeros(request.Cpf),
-                    TipoInvestimento = request.TipoInvestimento.Trim(),
-                    Instituicao = request.Instituicao.Trim(),
-                    Liquidez = request.Liquidez.Trim(),
+                    NumeroCpf = SomenteNumeros(request.NumeroCpf),
+                    DescricaoTipoInvestimento = request.DescricaoTipoInvestimento.Trim(),
+                    NomeInstituicao = request.NomeInstituicao.Trim(),
+                    DescricaoLiquidez = request.DescricaoLiquidez.Trim(),
                     DataVencimento = request.DataVencimento,
-                    Objetivo = request.Objetivo.Trim(),
-                    Observacao = request.Observacao?.Trim() ?? string.Empty,
-                    Situacao = SituacaoInvestimento.Investido
+                    DescricaoObjetivo = request.DescricaoObjetivo.Trim(),
+                    DescricaoObservacao = request.DescricaoObservacao?.Trim() ?? string.Empty,
+                    SituacaoInvestimento = SituacaoInvestimento.Investido
                 };
 
                 var incluido = await investimentoRepository.IncluirAsync(entity);
                 await notificacaoService.NotificarCriacaoAsync(incluido);
 
-                return new ResultadoValidacao<InvestimentoEntityResponse>(new InvestimentoEntityResponse { Id = incluido.Id });
+                return new ResultadoValidacao<InvestimentoEntityResponse>(new InvestimentoEntityResponse { CodigoInvestimento = incluido.CodigoInvestimento });
             }
             catch (Exception ex)
             {
@@ -61,7 +62,8 @@ namespace InvesteBrasil.Investimento.Services
         }
 
         public async Task<IResultadoValidacao<PaginacaoEntity<InvestimentoListagemEntity>>> ConsultarInvestimentosAsync(
-            string? proprietario,
+            long codigoUsuario,
+            string? nomeProprietario,
             DateOnly? dataInicial,
             DateOnly? dataFinal,
             int pagina,
@@ -76,7 +78,8 @@ namespace InvesteBrasil.Investimento.Services
                     tamanhoPagina = 10;
 
                 var (itens, total) = await investimentoRepository.ConsultarAsync(
-                    proprietario,
+                    codigoUsuario,
+                    nomeProprietario,
                     dataInicial,
                     dataFinal,
                     pagina,
@@ -100,15 +103,15 @@ namespace InvesteBrasil.Investimento.Services
             }
         }
 
-        public async Task<IResultadoValidacao<InvestimentoDetalheEntity>> ConsultarInvestimentoAsync(long id, DateOnly? dataReferencia = null)
+        public async Task<IResultadoValidacao<InvestimentoDetalheEntity>> ConsultarInvestimentoAsync(long codigoUsuario, long codigoInvestimento, DateOnly? dataReferencia = null)
         {
             try
             {
-                var validacao = Validator.ConsultarInvestimento(id);
+                var validacao = Validator.ConsultarInvestimento(codigoInvestimento);
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<InvestimentoDetalheEntity>(validacao);
 
-                var investimento = await investimentoRepository.ConsultarPorIdAsync(id);
+                var investimento = await investimentoRepository.ConsultarPorIdAsync(codigoInvestimento, codigoUsuario);
                 if (investimento == null)
                     return new ResultadoValidacao<InvestimentoDetalheEntity>("Investimento não encontrado.");
 
@@ -120,19 +123,19 @@ namespace InvesteBrasil.Investimento.Services
             }
         }
 
-        public async Task<IResultadoValidacao<InvestimentoDetalheEntity>> ResgatarInvestimentoAsync(ResgatarInvestimentoRequestEntity request)
+        public async Task<IResultadoValidacao<InvestimentoDetalheEntity>> ResgatarInvestimentoAsync(long codigoUsuario, ResgatarInvestimentoRequestEntity request)
         {
             try
             {
-                var investimento = request == null ? null : await investimentoRepository.ConsultarPorIdAsync(request.Id);
+                var investimento = request == null ? null : await investimentoRepository.ConsultarPorIdAsync(request.CodigoInvestimento, codigoUsuario);
                 var validacao = Validator.ResgatarInvestimento(request!, investimento, Hoje());
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<InvestimentoDetalheEntity>(validacao);
 
-                await investimentoRepository.ResgatarAsync(request!.Id, request.DataResgate);
+                await investimentoRepository.ResgatarAsync(request!.CodigoInvestimento, codigoUsuario, request.DataResgate);
 
                 investimento!.DataResgate = request.DataResgate;
-                investimento.Situacao = SituacaoInvestimento.Resgatado;
+                investimento.SituacaoInvestimento = SituacaoInvestimento.Resgatado;
 
                 var detalhe = MapearDetalhe(investimento, request.DataResgate);
                 await notificacaoService.NotificarResgateAsync(investimento, detalhe);
@@ -145,12 +148,12 @@ namespace InvesteBrasil.Investimento.Services
             }
         }
 
-        public async Task<IResultadoValidacao<SaldoGeralEntity>> ConsultarSaldoGeralAsync()
+        public async Task<IResultadoValidacao<SaldoGeralEntity>> ConsultarSaldoGeralAsync(long codigoUsuario)
         {
             try
             {
                 var hoje = Hoje();
-                var ativos = await investimentoRepository.ConsultarAtivosAsync();
+                var ativos = await investimentoRepository.ConsultarAtivosAsync(codigoUsuario);
                 var saldo = ativos.Sum(item => CalculadoraRendimento.CalcularSaldoEsperado(item.ValorInicial, item.DataCriacao, hoje));
 
                 return new ResultadoValidacao<SaldoGeralEntity>(new SaldoGeralEntity
@@ -166,21 +169,21 @@ namespace InvesteBrasil.Investimento.Services
 
         private static InvestimentoListagemEntity MapearListagem(InvestimentoEntity item, DateOnly hoje)
         {
-            var resgatado = item.Situacao == SituacaoInvestimento.Resgatado;
+            var resgatado = item.SituacaoInvestimento == SituacaoInvestimento.Resgatado;
             var dataReferencia = resgatado && item.DataResgate.HasValue ? item.DataResgate.Value : hoje;
 
             return new InvestimentoListagemEntity
             {
-                Id = item.Id,
-                Proprietario = item.Proprietario,
-                TipoInvestimento = item.TipoInvestimento,
-                Instituicao = item.Instituicao,
+                CodigoInvestimento = item.CodigoInvestimento,
+                NomeProprietario = item.NomeProprietario,
+                DescricaoTipoInvestimento = item.DescricaoTipoInvestimento,
+                NomeInstituicao = item.NomeInstituicao,
                 DataCriacao = item.DataCriacao,
                 ValorInicial = item.ValorInicial,
-                SaldoAtual = resgatado
+                ValorSaldoAtual = resgatado
                     ? 0
                     : CalculadoraRendimento.CalcularSaldoEsperado(item.ValorInicial, item.DataCriacao, dataReferencia),
-                Situacao = item.Situacao
+                SituacaoInvestimento = item.SituacaoInvestimento
             };
         }
 
@@ -197,24 +200,24 @@ namespace InvesteBrasil.Investimento.Services
 
             return new InvestimentoDetalheEntity
             {
-                Id = item.Id,
-                Proprietario = item.Proprietario,
+                CodigoInvestimento = item.CodigoInvestimento,
+                NomeProprietario = item.NomeProprietario,
                 DataCriacao = item.DataCriacao,
                 DataResgate = item.DataResgate,
                 ValorInicial = item.ValorInicial,
-                Cpf = item.Cpf,
-                TipoInvestimento = item.TipoInvestimento,
-                Instituicao = item.Instituicao,
-                Liquidez = item.Liquidez,
+                NumeroCpf = item.NumeroCpf,
+                DescricaoTipoInvestimento = item.DescricaoTipoInvestimento,
+                NomeInstituicao = item.NomeInstituicao,
+                DescricaoLiquidez = item.DescricaoLiquidez,
                 DataVencimento = item.DataVencimento,
-                Objetivo = item.Objetivo,
-                Observacao = item.Observacao,
-                Ganhos = ganhos,
-                SaldoEsperado = saldoEsperado,
-                AliquotaImposto = aliquota,
+                DescricaoObjetivo = item.DescricaoObjetivo,
+                DescricaoObservacao = item.DescricaoObservacao,
+                ValorGanhos = ganhos,
+                ValorSaldoEsperado = saldoEsperado,
+                ValorAliquotaImposto = aliquota,
                 ValorImposto = imposto,
                 ValorLiquido = CalculadoraRendimento.CalcularValorLiquido(saldoEsperado, imposto),
-                Situacao = item.Situacao
+                SituacaoInvestimento = item.SituacaoInvestimento
             };
         }
 

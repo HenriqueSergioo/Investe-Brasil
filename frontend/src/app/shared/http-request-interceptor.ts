@@ -31,7 +31,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           ? error.error
           : 'Não foi possível concluir a operação.';
 
-        if (!request.url.includes('Autenticacao/Entrar') && !request.url.includes('ConsultarMercado')) {
+        if (!request.url.includes('Autenticacao/')) {
           this.alertService.erro(mensagem);
         }
 

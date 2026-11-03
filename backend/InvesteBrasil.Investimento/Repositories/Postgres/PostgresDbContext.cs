@@ -9,8 +9,8 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
 
         public PostgresDbContext(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("Neon")
-                ?? throw new InvalidOperationException("Connection string 'Neon' não configurada.");
+            var connectionString = NeonConnection.Obter(configuration)
+                ?? throw new InvalidOperationException("Connection string do Neon não configurada.");
 
             Connection = new NpgsqlConnection(connectionString);
         }

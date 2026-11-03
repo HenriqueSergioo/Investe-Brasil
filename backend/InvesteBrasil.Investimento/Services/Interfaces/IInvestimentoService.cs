@@ -6,24 +6,25 @@ namespace InvesteBrasil.Investimento.Services.Interfaces
 {
     public interface IInvestimentoService
     {
-        Task<IResultadoValidacao<InvestimentoEntityResponse>> IncluirInvestimentoAsync(IncluirInvestimentoRequestEntity request);
+        Task<IResultadoValidacao<InvestimentoEntityResponse>> IncluirInvestimentoAsync(long codigoUsuario, IncluirInvestimentoRequestEntity request);
 
         Task<IResultadoValidacao<PaginacaoEntity<InvestimentoListagemEntity>>> ConsultarInvestimentosAsync(
-            string? proprietario,
+            long codigoUsuario,
+            string? nomeProprietario,
             DateOnly? dataInicial,
             DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina);
 
-        Task<IResultadoValidacao<InvestimentoDetalheEntity>> ConsultarInvestimentoAsync(long id, DateOnly? dataReferencia = null);
+        Task<IResultadoValidacao<InvestimentoDetalheEntity>> ConsultarInvestimentoAsync(long codigoUsuario, long codigoInvestimento, DateOnly? dataReferencia = null);
 
-        Task<IResultadoValidacao<InvestimentoDetalheEntity>> ResgatarInvestimentoAsync(ResgatarInvestimentoRequestEntity request);
+        Task<IResultadoValidacao<InvestimentoDetalheEntity>> ResgatarInvestimentoAsync(long codigoUsuario, ResgatarInvestimentoRequestEntity request);
 
-        Task<IResultadoValidacao<SaldoGeralEntity>> ConsultarSaldoGeralAsync();
+        Task<IResultadoValidacao<SaldoGeralEntity>> ConsultarSaldoGeralAsync(long codigoUsuario);
     }
 
     public class InvestimentoEntityResponse
     {
-        public long Id { get; set; }
+        public long CodigoInvestimento { get; set; }
     }
 }

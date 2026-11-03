@@ -1,22 +1,22 @@
 export class InvestimentoDetalheEntity {
-  id = 0;
-  proprietario = '';
+  codigoInvestimento = 0;
+  nomeProprietario = '';
   dataCriacao = '';
   dataResgate?: string | null;
   valorInicial = 0;
-  cpf = '';
-  tipoInvestimento = '';
-  instituicao = '';
-  liquidez = '';
+  numeroCpf = '';
+  descricaoTipoInvestimento = '';
+  nomeInstituicao = '';
+  descricaoLiquidez = '';
   dataVencimento?: string | null;
-  objetivo = '';
-  observacao = '';
-  ganhos = 0;
-  saldoEsperado = 0;
-  aliquotaImposto = 0;
+  descricaoObjetivo = '';
+  descricaoObservacao = '';
+  valorGanhos = 0;
+  valorSaldoEsperado = 0;
+  valorAliquotaImposto = 0;
   valorImposto = 0;
   valorLiquido = 0;
-  situacao = '';
+  situacaoInvestimento = '';
 
   constructor(init?: Partial<InvestimentoDetalheEntity>) {
     Object.assign(this, init);

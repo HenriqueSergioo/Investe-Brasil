@@ -19,4 +19,11 @@ export class LoginService extends ServiceBase {
       { usuario, senha }
     );
   }
+
+  cadastrar(nome: string, usuario: string, email: string, senha: string): Observable<UsuarioAutenticadoEntity> {
+    return this.http.post<UsuarioAutenticadoEntity>(
+      `${environment.apiInvestimentos}Autenticacao/CadastrarUsuario`,
+      { nome, usuario, email, senha }
+    );
+  }
 }

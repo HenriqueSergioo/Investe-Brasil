@@ -19,8 +19,7 @@ dotnet run --project InvesteBrasil.Investimento.Api
 A API sobe em [http://localhost:5000](http://localhost:5000).  
 Documentação Swagger: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
-Sem connection string, a API usa um repositório em memória (com dados de exemplo).  
-Quando o Neon estiver disponível, preencha `ConnectionStrings:Neon` em `backend/InvesteBrasil.Investimento.Api/appsettings.json`. O script da tabela está em `backend/Database/Scripts/001_criar_tabela_investimento.sql` e também é aplicado automaticamente na subida.
+A API exige o Neon. Coloque `DATABASE_URL` em `backend/.env` (arquivo local, fora do Git). Na subida, as queries criam as tabelas `usuario` e `investimento` no Postgres. Cada investimento fica ligado ao usuário autenticado (`COD_USUARIO`); a lista, o saldo e o resgate usam só os registros daquela conta. As colunas seguem o padrão Feev (`COD_`, `NOM_`, `DAT_`, `VLR_`, `DES_`, `STA_`).
 
 ### Frontend
 
@@ -34,12 +33,11 @@ npm start
 
 A interface sobe em [http://localhost:4200](http://localhost:4200).
 
-Usuários de demonstração:
+O cadastro de usuário é feito na tela de login e grava na tabela `usuario`, inclusive o e-mail para notificação.
 
-- `henrique` / `123456`
-- `admin` / `admin123`
+Para enviar e-mail de verdade na criação e no resgate, preencha as variáveis `SMTP_*` no `backend/.env`. Sem SMTP, a notificação só aparece no log da API.
 
-Backend e frontend sobem de forma independente.
+Backend e frontend sobem de forma independente. Documentação da API: [http://localhost:5000/swagger](http://localhost:5000/swagger).
 
 ## Regras de negócio
 

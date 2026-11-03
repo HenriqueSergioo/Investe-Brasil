@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ServiceBase } from '../../../shared/service-base';
 import { InvestimentoDetalheEntity } from '../entities/investimento-detalhe.entity';
-import { PainelMercadoEntity } from '../entities/painel-mercado.entity';
 import { InvestimentoListagemEntity } from '../entities/investimento-listagem.entity';
 import { PaginacaoEntity } from '../entities/paginacao.entity';
 import { IncluirInvestimentoRequestEntity } from '../entities/requests/incluir-investimento.request.entity';
@@ -19,7 +18,7 @@ export class InvestimentoService extends ServiceBase {
   }
 
   consultarInvestimentos(
-    proprietario: string,
+    nomeProprietario: string,
     dataInicial: string,
     dataFinal: string,
     pagina: number,
@@ -29,7 +28,7 @@ export class InvestimentoService extends ServiceBase {
       `${environment.apiInvestimentos}Investimento/ConsultarInvestimentos`,
       {
         params: this.httpParams({
-          proprietario,
+          nomeProprietario,
           dataInicial,
           dataFinal,
           pagina,
@@ -48,10 +47,6 @@ export class InvestimentoService extends ServiceBase {
 
   consultarSaldoGeral(): Observable<{ saldo: number }> {
     return this.http.get<{ saldo: number }>(`${environment.apiInvestimentos}Investimento/ConsultarSaldoGeral`);
-  }
-
-  consultarMercado(): Observable<PainelMercadoEntity> {
-    return this.http.get<PainelMercadoEntity>(`${environment.apiInvestimentos}Mercado/ConsultarMercado`);
   }
 
   incluirInvestimento(request: IncluirInvestimentoRequestEntity): Observable<{ id: number }> {

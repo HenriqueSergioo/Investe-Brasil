@@ -1,7 +1,7 @@
 export class UsuarioAutenticadoEntity {
-  id = 0;
-  nome = '';
-  usuario = '';
+  codigoUsuario = 0;
+  nomeUsuario = '';
+  descricaoUsuario = '';
   token = '';
 
   constructor(init?: Partial<UsuarioAutenticadoEntity>) {

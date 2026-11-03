@@ -11,8 +11,12 @@ import { LoginService } from './login.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  cadastrando = false;
+  nome = '';
   usuario = '';
+  email = '';
   senha = '';
+  confirmarSenha = '';
   carregando = false;
 
   constructor(
@@ -26,6 +30,20 @@ export class LoginComponent implements OnInit {
     if (this.session.autenticado) {
       this.router.navigate(['/investimentos']);
     }
+  }
+
+  mostrarCadastro(): void {
+    this.cadastrando = true;
+    this.carregando = false;
+    this.senha = '';
+    this.confirmarSenha = '';
+  }
+
+  mostrarLogin(): void {
+    this.cadastrando = false;
+    this.carregando = false;
+    this.senha = '';
+    this.confirmarSenha = '';
   }
 
   acessar(): void {
@@ -44,11 +62,38 @@ export class LoginComponent implements OnInit {
         },
         error: erro => {
           this.carregando = false;
-          const mensagem = typeof erro.error === 'string' && erro.error
-            ? erro.error
-            : 'Não foi possível entrar.';
-          this.alertService.erro(mensagem);
+          this.alertService.erro(this.mensagemErro(erro, 'Não foi possível entrar.'));
         }
       });
+  }
+
+  cadastrar(): void {
+    if (!this.nome.trim() || !this.usuario.trim() || !this.email.trim() || !this.senha) {
+      this.alertService.erro('Preencha nome, usuário, e-mail e senha.');
+      return;
+    }
+
+    if (this.senha !== this.confirmarSenha) {
+      this.alertService.erro('A confirmação da senha não confere.');
+      return;
+    }
+
+    this.carregando = true;
+    this.loginService.cadastrar(this.nome.trim(), this.usuario.trim(), this.email.trim(), this.senha)
+      .pipe(take(1))
+      .subscribe({
+        next: retorno => {
+          this.session.gravar(retorno);
+          this.router.navigate(['/investimentos']);
+        },
+        error: erro => {
+          this.carregando = false;
+          this.alertService.erro(this.mensagemErro(erro, 'Não foi possível cadastrar.'));
+        }
+      });
+  }
+
+  private mensagemErro(erro: { error?: unknown }, padrao: string): string {
+    return typeof erro.error === 'string' && erro.error ? erro.error : padrao;
   }
 }

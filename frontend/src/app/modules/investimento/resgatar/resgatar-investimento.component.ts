@@ -41,7 +41,7 @@ export class ResgatarInvestimentoComponent implements OnInit {
     }
 
     const request = new ResgatarInvestimentoRequestEntity({
-      id: this.detalhe.id,
+      codigoInvestimento: this.detalhe.codigoInvestimento,
       dataResgate: this.dataResgate
     });
 
@@ -51,7 +51,7 @@ export class ResgatarInvestimentoComponent implements OnInit {
         this.alertService.sucesso(
           `Resgate concluído. Valor líquido: ${formatarMoeda(resultado.valorLiquido)}`
         );
-        this.router.navigate(['/investimentos', resultado.id]);
+        this.router.navigate(['/investimentos', resultado.codigoInvestimento]);
       });
   }
 

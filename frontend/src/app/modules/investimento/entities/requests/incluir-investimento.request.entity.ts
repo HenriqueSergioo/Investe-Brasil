@@ -1,14 +1,14 @@
 export class IncluirInvestimentoRequestEntity {
-  proprietario = '';
+  nomeProprietario = '';
   dataCriacao = '';
   valorInicial = 0;
-  cpf = '';
-  tipoInvestimento = '';
-  instituicao = '';
-  liquidez = '';
+  numeroCpf = '';
+  descricaoTipoInvestimento = '';
+  nomeInstituicao = '';
+  descricaoLiquidez = '';
   dataVencimento?: string | null;
-  objetivo = '';
-  observacao = '';
+  descricaoObjetivo = '';
+  descricaoObservacao = '';
 
   constructor(init?: Partial<IncluirInvestimentoRequestEntity>) {
     Object.assign(this, init);

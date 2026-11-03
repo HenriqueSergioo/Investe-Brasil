@@ -31,7 +31,7 @@ export class DetalheInvestimentoComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['/investimentos', this.detalhe.id, 'resgatar']);
+    this.router.navigate(['/investimentos', this.detalhe.codigoInvestimento, 'resgatar']);
   }
 
   voltar(): void {

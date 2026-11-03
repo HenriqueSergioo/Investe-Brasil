@@ -15,7 +15,7 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var request = new IncluirInvestimentoRequestEntity
             {
-                Proprietario = "Ana",
+                NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = -10
             };
@@ -28,7 +28,7 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var request = new IncluirInvestimentoRequestEntity
             {
-                Proprietario = "Ana",
+                NomeProprietario = "Ana",
                 DataCriacao = hoje.AddDays(1),
                 ValorInicial = 100
             };
@@ -41,14 +41,14 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var request = new IncluirInvestimentoRequestEntity
             {
-                Proprietario = "Ana",
+                NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                Cpf = "529.982.247-25",
-                TipoInvestimento = "CDB",
-                Instituicao = "Nubank",
-                Liquidez = "Diária",
-                Objetivo = "Reserva de emergência"
+                NumeroCpf = "529.982.247-25",
+                DescricaoTipoInvestimento = "CDB",
+                NomeInstituicao = "Nubank",
+                DescricaoLiquidez = "Diária",
+                DescricaoObjetivo = "Reserva de emergência"
             };
 
             Assert.False(validador.IncluirInvestimento(request, hoje).OcorreuErro);
@@ -59,14 +59,14 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var request = new IncluirInvestimentoRequestEntity
             {
-                Proprietario = "Ana",
+                NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                Cpf = "123.456.789",
-                TipoInvestimento = "CDB",
-                Instituicao = "Nubank",
-                Liquidez = "Diária",
-                Objetivo = "Reserva de emergência"
+                NumeroCpf = "123.456.789",
+                DescricaoTipoInvestimento = "CDB",
+                NomeInstituicao = "Nubank",
+                DescricaoLiquidez = "Diária",
+                DescricaoObjetivo = "Reserva de emergência"
             };
 
             Assert.True(validador.IncluirInvestimento(request, hoje).OcorreuErro);
@@ -77,14 +77,14 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var request = new IncluirInvestimentoRequestEntity
             {
-                Proprietario = "Ana",
+                NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                Cpf = "529.982.247-25",
-                TipoInvestimento = "CDB",
-                Instituicao = "Nubank",
-                Liquidez = "Diária",
-                Objetivo = "Reserva de emergência",
+                NumeroCpf = "529.982.247-25",
+                DescricaoTipoInvestimento = "CDB",
+                NomeInstituicao = "Nubank",
+                DescricaoLiquidez = "Diária",
+                DescricaoObjetivo = "Reserva de emergência",
                 DataVencimento = hoje.AddDays(-1)
             };
 
@@ -92,18 +92,43 @@ namespace InvesteBrasil.Investimento.Tests
         }
 
         [Fact]
-        public void ResgatarInvestimento_DataAnteriorACriacao_DeveFalhar()
+        public void ConsultarInvestimento_IdInvalido_DeveFalhar()
+        {
+            Assert.True(validador.ConsultarInvestimento(0).OcorreuErro);
+        }
+
+        [Fact]
+        public void ResgatarInvestimento_DadosValidos_DevePassar()
         {
             var investimento = new InvestimentoEntity
             {
-                Id = 1,
+                CodigoInvestimento = 1,
                 DataCriacao = new DateOnly(2024, 5, 10),
-                Situacao = SituacaoInvestimento.Investido
+                SituacaoInvestimento = SituacaoInvestimento.Investido
             };
 
             var request = new ResgatarInvestimentoRequestEntity
             {
-                Id = 1,
+                CodigoInvestimento = 1,
+                DataResgate = hoje
+            };
+
+            Assert.False(validador.ResgatarInvestimento(request, investimento, hoje).OcorreuErro);
+        }
+
+        [Fact]
+        public void ResgatarInvestimento_DataAnteriorACriacao_DeveFalhar()
+        {
+            var investimento = new InvestimentoEntity
+            {
+                CodigoInvestimento = 1,
+                DataCriacao = new DateOnly(2024, 5, 10),
+                SituacaoInvestimento = SituacaoInvestimento.Investido
+            };
+
+            var request = new ResgatarInvestimentoRequestEntity
+            {
+                CodigoInvestimento = 1,
                 DataResgate = new DateOnly(2024, 5, 9)
             };
 
@@ -115,14 +140,14 @@ namespace InvesteBrasil.Investimento.Tests
         {
             var investimento = new InvestimentoEntity
             {
-                Id = 1,
+                CodigoInvestimento = 1,
                 DataCriacao = new DateOnly(2024, 1, 1),
-                Situacao = SituacaoInvestimento.Resgatado
+                SituacaoInvestimento = SituacaoInvestimento.Resgatado
             };
 
             var request = new ResgatarInvestimentoRequestEntity
             {
-                Id = 1,
+                CodigoInvestimento = 1,
                 DataResgate = hoje
             };
 

@@ -17,9 +17,20 @@ namespace InvesteBrasil.Investimento.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public IActionResult Entrar([FromBody] EntrarRequestEntity request)
+        public async Task<IActionResult> Entrar([FromBody] EntrarRequestEntity request)
         {
-            var resultado = autenticacaoService.Entrar(request);
+            var resultado = await autenticacaoService.EntrarAsync(request);
+            if (resultado.OcorreuErro)
+                return BadRequest(resultado.MensagemErro);
+
+            return Ok(resultado.Retorno);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> CadastrarUsuario([FromBody] CadastrarUsuarioRequestEntity request)
+        {
+            var resultado = await autenticacaoService.CadastrarUsuarioAsync(request);
             if (resultado.OcorreuErro)
                 return BadRequest(resultado.MensagemErro);
 

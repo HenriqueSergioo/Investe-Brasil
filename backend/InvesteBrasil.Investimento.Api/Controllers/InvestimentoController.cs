@@ -19,7 +19,10 @@ namespace InvesteBrasil.Investimento.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> IncluirInvestimento([FromBody] IncluirInvestimentoRequestEntity request)
         {
-            var resultado = await investimentoService.IncluirInvestimentoAsync(request);
+            if (!TentarObterCodigoUsuario(out var codigoUsuario))
+                return Unauthorized();
+
+            var resultado = await investimentoService.IncluirInvestimentoAsync(codigoUsuario, request);
             if (resultado.OcorreuErro)
                 return BadRequest(resultado.MensagemErro);
 
@@ -28,14 +31,18 @@ namespace InvesteBrasil.Investimento.Api.Controllers
 
         [HttpGet("[action]")]
         public async Task<IActionResult> ConsultarInvestimentos(
-            [FromQuery] string? proprietario,
+            [FromQuery] string? nomeProprietario,
             [FromQuery] DateOnly? dataInicial,
             [FromQuery] DateOnly? dataFinal,
             [FromQuery] int pagina = 1,
             [FromQuery] int tamanhoPagina = 10)
         {
+            if (!TentarObterCodigoUsuario(out var codigoUsuario))
+                return Unauthorized();
+
             var resultado = await investimentoService.ConsultarInvestimentosAsync(
-                proprietario,
+                codigoUsuario,
+                nomeProprietario,
                 dataInicial,
                 dataFinal,
                 pagina,
@@ -50,7 +57,10 @@ namespace InvesteBrasil.Investimento.Api.Controllers
         [HttpGet("[action]/{id:long}")]
         public async Task<IActionResult> ConsultarInvestimento([FromRoute] long id, [FromQuery] DateOnly? dataReferencia)
         {
-            var resultado = await investimentoService.ConsultarInvestimentoAsync(id, dataReferencia);
+            if (!TentarObterCodigoUsuario(out var codigoUsuario))
+                return Unauthorized();
+
+            var resultado = await investimentoService.ConsultarInvestimentoAsync(codigoUsuario, id, dataReferencia);
             if (resultado.OcorreuErro)
                 return BadRequest(resultado.MensagemErro);
 
@@ -60,7 +70,10 @@ namespace InvesteBrasil.Investimento.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> ResgatarInvestimento([FromBody] ResgatarInvestimentoRequestEntity request)
         {
-            var resultado = await investimentoService.ResgatarInvestimentoAsync(request);
+            if (!TentarObterCodigoUsuario(out var codigoUsuario))
+                return Unauthorized();
+
+            var resultado = await investimentoService.ResgatarInvestimentoAsync(codigoUsuario, request);
             if (resultado.OcorreuErro)
                 return BadRequest(resultado.MensagemErro);
 
@@ -70,7 +83,10 @@ namespace InvesteBrasil.Investimento.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> ConsultarSaldoGeral()
         {
-            var resultado = await investimentoService.ConsultarSaldoGeralAsync();
+            if (!TentarObterCodigoUsuario(out var codigoUsuario))
+                return Unauthorized();
+
+            var resultado = await investimentoService.ConsultarSaldoGeralAsync(codigoUsuario);
             if (resultado.OcorreuErro)
                 return BadRequest(resultado.MensagemErro);
 

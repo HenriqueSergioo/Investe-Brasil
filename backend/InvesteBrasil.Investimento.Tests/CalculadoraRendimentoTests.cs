@@ -64,6 +64,12 @@ namespace InvesteBrasil.Investimento.Tests
         }
 
         [Fact]
+        public void CalcularImposto_GanhoZero_DeveSerZero()
+        {
+            Assert.Equal(0m, CalculadoraRendimento.CalcularImposto(0m, 0.225m));
+        }
+
+        [Fact]
         public void CalcularImposto_ExemploDoEnunciado_DeveSer45()
         {
             var imposto = CalculadoraRendimento.CalcularImposto(200m, 0.225m);

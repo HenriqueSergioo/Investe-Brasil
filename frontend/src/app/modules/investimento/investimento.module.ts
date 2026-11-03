@@ -6,14 +6,12 @@ import { CriarInvestimentoComponent } from './criar/criar-investimento.component
 import { DetalheInvestimentoComponent } from './detalhe/detalhe-investimento.component';
 import { InvestimentoRoutingModule } from './investimento-routing.module';
 import { ListarInvestimentoComponent } from './listar/listar-investimento.component';
-import { MercadoComponent } from './mercado/mercado.component';
 import { ResgatarListaComponent } from './resgatar-lista/resgatar-lista.component';
 import { ResgatarInvestimentoComponent } from './resgatar/resgatar-investimento.component';
 
 @NgModule({
   declarations: [
     ListarInvestimentoComponent,
-    MercadoComponent,
     CriarInvestimentoComponent,
     DetalheInvestimentoComponent,
     ResgatarListaComponent,

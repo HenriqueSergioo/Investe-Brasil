@@ -22,12 +22,12 @@ export class ResgatarListaComponent implements OnInit {
     this.investimentoService.consultarInvestimentos('', '', '', 1, 100)
       .pipe(take(1))
       .subscribe(retorno => {
-        this.investimentos = retorno.itens.filter(item => item.situacao === 'Investido');
+        this.investimentos = retorno.itens.filter(item => item.situacaoInvestimento === 'Investido');
       });
   }
 
   resgatar(item: InvestimentoListagemEntity): void {
-    this.router.navigate(['/investimentos', item.id, 'resgatar']);
+    this.router.navigate(['/investimentos', item.codigoInvestimento, 'resgatar']);
   }
 
   formatarMoeda = formatarMoeda;

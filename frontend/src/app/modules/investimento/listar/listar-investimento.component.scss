@@ -1,6 +1,6 @@
 .resumo {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) 1fr;
+  grid-template-columns: minmax(220px, 280px);
   gap: 16px;
 }
 
@@ -16,77 +16,6 @@
   color: var(--verde);
   font-size: 2rem;
   font-weight: 600;
-}
-
-.mercado-card {
-  min-height: 110px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-  cursor: pointer;
-}
-
-.mercado-topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.mercado-topo small {
-  color: #9ca3af;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.mercado-objetivo {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.cotacoes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-}
-
-.cotacao {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cotacao span {
-  color: #6b7280;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.cotacao strong {
-  font-size: 1.05rem;
-}
-
-.cotacao small {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #6b7280;
-}
-
-.cotacao small.alta {
-  color: #15803d;
-}
-
-.cotacao small.baixa {
-  color: #b91c1c;
-}
-
-@media (max-width: 768px) {
-  .resumo {
-    grid-template-columns: 1fr;
-  }
 }
 
 .toolbar {
