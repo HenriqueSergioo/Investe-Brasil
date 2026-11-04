@@ -7,7 +7,6 @@ import { DetalheInvestimentoComponent } from './detalhe/detalhe-investimento.com
 import { InvestimentoComponent } from './investimento.component';
 import { InvestimentoRoutingModule } from './investimento-routing.module';
 import { ListarInvestimentoComponent } from './listar/listar-investimento.component';
-import { ResgatarListaComponent } from './resgatar-lista/resgatar-lista.component';
 import { ResgatarInvestimentoComponent } from './resgatar/resgatar-investimento.component';
 
 @NgModule({
@@ -15,7 +14,6 @@ import { ResgatarInvestimentoComponent } from './resgatar/resgatar-investimento.
     ListarInvestimentoComponent,
     CriarInvestimentoComponent,
     DetalheInvestimentoComponent,
-    ResgatarListaComponent,
     ResgatarInvestimentoComponent
   ],
   imports: [

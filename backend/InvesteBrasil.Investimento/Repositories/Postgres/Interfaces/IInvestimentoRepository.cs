@@ -10,16 +10,11 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres.Interfaces
 
         Task<(IEnumerable<InvestimentoEntity> Itens, int Total)> ConsultarAsync(
             long codigoUsuario,
-            string? nomeProprietario,
-            DateOnly? dataInicial,
-            DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina);
 
         Task<IEnumerable<InvestimentoEntity>> ConsultarAtivosAsync(long codigoUsuario);
 
         Task ResgatarAsync(long codigoInvestimento, long codigoUsuario, DateOnly dataResgate);
-
-        Task GarantirEsquemaAsync();
     }
 }

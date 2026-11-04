@@ -18,9 +18,6 @@ export class InvestimentoService extends ServiceBase {
   }
 
   consultarInvestimentos(
-    nomeProprietario: string,
-    dataInicial: string,
-    dataFinal: string,
     pagina: number,
     tamanhoPagina: number
   ): Observable<PaginacaoEntity<InvestimentoListagemEntity>> {
@@ -28,9 +25,6 @@ export class InvestimentoService extends ServiceBase {
       `${environment.apiInvestimentos}Investimento/ConsultarInvestimentos`,
       {
         params: this.httpParams({
-          nomeProprietario,
-          dataInicial,
-          dataFinal,
           pagina,
           tamanhoPagina
         })

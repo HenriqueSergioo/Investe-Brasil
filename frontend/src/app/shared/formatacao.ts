@@ -42,12 +42,3 @@ export function hojeIso(): string {
 export function formatarPercentual(valor: number): string {
   return `${(valor * 100).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
 }
-
-export function formatarCpf(valor: string | null | undefined): string {
-  const numeros = (valor ?? '').replace(/\D/g, '');
-  if (numeros.length !== 11) {
-    return valor || '-';
-  }
-
-  return `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6, 9)}-${numeros.slice(9)}`;
-}

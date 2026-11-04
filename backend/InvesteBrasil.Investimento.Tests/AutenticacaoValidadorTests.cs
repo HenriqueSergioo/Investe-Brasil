@@ -34,7 +34,6 @@ namespace InvesteBrasil.Investimento.Tests
             var request = new CadastrarUsuarioRequestEntity
             {
                 Nome = "Ana",
-                Usuario = "ana",
                 Email = "ana@email.com",
                 Senha = "123"
             };
@@ -61,7 +60,6 @@ namespace InvesteBrasil.Investimento.Tests
             var request = new CadastrarUsuarioRequestEntity
             {
                 Nome = "Ana Souza",
-                Usuario = "ana",
                 Email = "ana-email",
                 Senha = "senha12"
             };

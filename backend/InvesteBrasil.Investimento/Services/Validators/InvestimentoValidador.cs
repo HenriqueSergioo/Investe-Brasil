@@ -67,8 +67,5 @@ namespace InvesteBrasil.Investimento.Services.Validators
 
             return Sucesso();
         }
-
-        private static string SomenteNumeros(string valor) =>
-            new(valor.Where(char.IsDigit).ToArray());
     }
 }

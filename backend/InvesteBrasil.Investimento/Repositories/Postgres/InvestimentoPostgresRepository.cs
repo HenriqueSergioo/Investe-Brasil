@@ -14,15 +14,6 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
         {
         }
 
-        public async Task GarantirEsquemaAsync()
-        {
-            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarTabela);
-            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.MigrarColunas);
-            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarColunas);
-            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.RemoverCompartilhados);
-            await ExecuteNonQueryAsync(InvestimentoPostgresQuery.CriarIndices);
-        }
-
         public async Task<InvestimentoEntity> IncluirAsync(InvestimentoEntity entity)
         {
             var codigoInvestimento = await ExecuteScalarAsync(
@@ -31,10 +22,6 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
                 Parametro("nomeProprietario", entity.NomeProprietario.Trim()),
                 Parametro("dataCriacao", NpgsqlDbType.Date, entity.DataCriacao),
                 Parametro("valorInicial", entity.ValorInicial),
-                Parametro("numeroCpf", string.IsNullOrWhiteSpace(entity.NumeroCpf) ? null : entity.NumeroCpf),
-                Parametro("descricaoTipoInvestimento", entity.DescricaoTipoInvestimento),
-                Parametro("nomeInstituicao", entity.NomeInstituicao),
-                Parametro("descricaoLiquidez", entity.DescricaoLiquidez),
                 Parametro("dataVencimento", NpgsqlDbType.Date, entity.DataVencimento.HasValue ? entity.DataVencimento.Value : null),
                 Parametro("descricaoObjetivo", entity.DescricaoObjetivo),
                 Parametro("descricaoObservacao", entity.DescricaoObservacao),
@@ -59,26 +46,20 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
 
         public async Task<(IEnumerable<InvestimentoEntity> Itens, int Total)> ConsultarAsync(
             long codigoUsuario,
-            string? nomeProprietario,
-            DateOnly? dataInicial,
-            DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina)
         {
             var total = Convert.ToInt32(await ExecuteScalarAsync(
                 InvestimentoPostgresQuery.Contar,
-                Filtros(codigoUsuario, nomeProprietario, dataInicial, dataFinal)) ?? 0);
-
-            var parametrosConsulta = Filtros(codigoUsuario, nomeProprietario, dataInicial, dataFinal)
-                .Concat(
-                [
-                    Parametro("tamanhoPagina", tamanhoPagina),
-                    Parametro("offset", (pagina - 1) * tamanhoPagina)
-                ])
-                .ToArray();
+                Parametro("codigoUsuario", codigoUsuario)) ?? 0);
 
             var itens = new List<InvestimentoEntity>();
-            await using var dataReader = await ExecuteReaderAsync(InvestimentoPostgresQuery.Consultar, parametrosConsulta);
+            await using var dataReader = await ExecuteReaderAsync(
+                InvestimentoPostgresQuery.Consultar,
+                Parametro("codigoUsuario", codigoUsuario),
+                Parametro("tamanhoPagina", tamanhoPagina),
+                Parametro("offset", (pagina - 1) * tamanhoPagina));
+
             while (await dataReader.ReadAsync())
                 itens.Add(Mapear(dataReader));
 
@@ -109,17 +90,6 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
                 Parametro("situacaoInvestimento", SituacaoInvestimento.Resgatado));
         }
 
-        private Npgsql.NpgsqlParameter[] Filtros(long codigoUsuario, string? nomeProprietario, DateOnly? dataInicial, DateOnly? dataFinal)
-        {
-            return
-            [
-                Parametro("codigoUsuario", codigoUsuario),
-                Parametro("nomeProprietario", NpgsqlDbType.Varchar, string.IsNullOrWhiteSpace(nomeProprietario) ? null : nomeProprietario.Trim()),
-                Parametro("dataInicial", NpgsqlDbType.Date, dataInicial.HasValue ? dataInicial.Value : null),
-                Parametro("dataFinal", NpgsqlDbType.Date, dataFinal.HasValue ? dataFinal.Value : null)
-            ];
-        }
-
         private static string LerTexto(Npgsql.NpgsqlDataReader reader, string campo)
         {
             var ordinal = reader.GetOrdinal(campo);
@@ -135,10 +105,6 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
                 NomeProprietario = reader.GetString(reader.GetOrdinal("NOM_PROPRIETARIO")),
                 DataCriacao = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_CRIACAO"))),
                 ValorInicial = reader.GetDecimal(reader.GetOrdinal("VLR_INICIAL")),
-                NumeroCpf = LerTexto(reader, "NUM_CPF"),
-                DescricaoTipoInvestimento = LerTexto(reader, "DES_TIPO_INVESTIMENTO"),
-                NomeInstituicao = LerTexto(reader, "NOM_INSTITUICAO"),
-                DescricaoLiquidez = LerTexto(reader, "DES_LIQUIDEZ"),
                 DataVencimento = reader.IsDBNull(reader.GetOrdinal("DAT_VENCIMENTO"))
                     ? null
                     : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_VENCIMENTO"))),

@@ -1,5 +1,4 @@
 using System.Text;
-using InvesteBrasil.Investimento.Repositories.Postgres.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -99,12 +98,6 @@ namespace InvesteBrasil.Investimento.Api
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-
-            using var scope = app.Services.CreateScope();
-            var investimentoRepository = scope.ServiceProvider.GetRequiredService<IInvestimentoRepository>();
-            var usuarioRepository = scope.ServiceProvider.GetRequiredService<IUsuarioRepository>();
-            usuarioRepository.GarantirEsquemaAsync().GetAwaiter().GetResult();
-            investimentoRepository.GarantirEsquemaAsync().GetAwaiter().GetResult();
         }
     }
 }

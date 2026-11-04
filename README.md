@@ -19,7 +19,7 @@ dotnet run --project InvesteBrasil.Investimento.Api
 A API sobe em [http://localhost:5000](http://localhost:5000).  
 Documentação Swagger: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
-A API exige o Neon. Coloque `DATABASE_URL` em `backend/.env` (arquivo local, fora do Git). Na subida, as queries criam as tabelas `usuario` e `investimento` no Postgres. Cada investimento fica ligado ao usuário autenticado (`COD_USUARIO`); a lista, o saldo e o resgate usam só os registros daquela conta. As colunas seguem o padrão Feev (`COD_`, `NOM_`, `DAT_`, `VLR_`, `DES_`, `STA_`).
+A API exige o Neon. Coloque `DATABASE_URL` em `backend/.env` (arquivo local, fora do Git). As tabelas `usuario` e `investimento` já existem no Postgres. Cada investimento fica ligado ao usuário autenticado (`COD_USUARIO`); a lista, o saldo e o resgate usam só os registros daquela conta. As colunas seguem o padrão Feev (`COD_`, `NOM_`, `DAT_`, `VLR_`, `DES_`, `STA_`).
 
 ### Frontend
 
@@ -88,7 +88,6 @@ backend/
   InvesteBrasil.Investimento/
   InvesteBrasil.Investimento.Api/
   InvesteBrasil.Investimento.Tests/
-  Database/Scripts/
 frontend/
   src/app/modules/investimento/
   src/app/shared/

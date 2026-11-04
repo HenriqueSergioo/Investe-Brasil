@@ -31,13 +31,7 @@ export class ListarInvestimentoComponent implements OnInit {
       .pipe(take(1))
       .subscribe(retorno => this.saldo = retorno.saldo);
 
-    this.investimentoService.consultarInvestimentos(
-      '',
-      '',
-      '',
-      this.pagina,
-      this.tamanhoPagina
-    )
+    this.investimentoService.consultarInvestimentos(this.pagina, this.tamanhoPagina)
       .pipe(take(1))
       .subscribe(retorno => this.paginacao = retorno);
   }

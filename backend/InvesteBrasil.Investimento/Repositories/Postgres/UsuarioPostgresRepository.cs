@@ -12,12 +12,6 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
         {
         }
 
-        public async Task GarantirEsquemaAsync()
-        {
-            await ExecuteNonQueryAsync(UsuarioPostgresQuery.CriarTabela);
-            await ExecuteNonQueryAsync(UsuarioPostgresQuery.MigrarColunas);
-        }
-
         public async Task<UsuarioEntity?> ConsultarPorUsuarioAsync(string usuario)
         {
             await using var dataReader = await ExecuteReaderAsync(

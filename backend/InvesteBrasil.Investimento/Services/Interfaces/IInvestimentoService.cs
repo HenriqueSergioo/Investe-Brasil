@@ -10,9 +10,6 @@ namespace InvesteBrasil.Investimento.Services.Interfaces
 
         Task<IResultadoValidacao<PaginacaoEntity<InvestimentoListagemEntity>>> ConsultarInvestimentosAsync(
             long codigoUsuario,
-            string? nomeProprietario,
-            DateOnly? dataInicial,
-            DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina);
 

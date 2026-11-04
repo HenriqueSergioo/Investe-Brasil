@@ -36,10 +36,6 @@ export class AlertService {
     this.adicionar('alerta', mensagem);
   }
 
-  erro(mensagem: string): void {
-    this.alerta(mensagem);
-  }
-
   confirmar(
     mensagem: string,
     opcoes?: { titulo?: string; textoConfirmar?: string; perigo?: boolean }

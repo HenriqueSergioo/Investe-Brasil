@@ -41,10 +41,6 @@ namespace InvesteBrasil.Investimento.Services
                     NomeProprietario = request.NomeProprietario.Trim(),
                     DataCriacao = request.DataCriacao,
                     ValorInicial = decimal.Round(request.ValorInicial, 2, MidpointRounding.AwayFromZero),
-                    NumeroCpf = SomenteNumeros(request.NumeroCpf),
-                    DescricaoTipoInvestimento = request.DescricaoTipoInvestimento.Trim(),
-                    NomeInstituicao = request.NomeInstituicao.Trim(),
-                    DescricaoLiquidez = request.DescricaoLiquidez.Trim(),
                     DataVencimento = request.DataVencimento,
                     DescricaoObjetivo = request.DescricaoObjetivo.Trim(),
                     DescricaoObservacao = request.DescricaoObservacao?.Trim() ?? string.Empty,
@@ -63,9 +59,6 @@ namespace InvesteBrasil.Investimento.Services
 
         public async Task<IResultadoValidacao<PaginacaoEntity<InvestimentoListagemEntity>>> ConsultarInvestimentosAsync(
             long codigoUsuario,
-            string? nomeProprietario,
-            DateOnly? dataInicial,
-            DateOnly? dataFinal,
             int pagina,
             int tamanhoPagina)
         {
@@ -79,9 +72,6 @@ namespace InvesteBrasil.Investimento.Services
 
                 var (itens, total) = await investimentoRepository.ConsultarAsync(
                     codigoUsuario,
-                    nomeProprietario,
-                    dataInicial,
-                    dataFinal,
                     pagina,
                     tamanhoPagina);
 
@@ -175,9 +165,7 @@ namespace InvesteBrasil.Investimento.Services
             {
                 CodigoInvestimento = item.CodigoInvestimento,
                 NomeProprietario = item.NomeProprietario,
-                DescricaoTipoInvestimento = item.DescricaoTipoInvestimento,
                 DescricaoObjetivo = item.DescricaoObjetivo,
-                NomeInstituicao = item.NomeInstituicao,
                 DataCriacao = item.DataCriacao,
                 ValorInicial = item.ValorInicial,
                 ValorSaldoAtual = resgatado
@@ -205,10 +193,6 @@ namespace InvesteBrasil.Investimento.Services
                 DataCriacao = item.DataCriacao,
                 DataResgate = item.DataResgate,
                 ValorInicial = item.ValorInicial,
-                NumeroCpf = item.NumeroCpf,
-                DescricaoTipoInvestimento = item.DescricaoTipoInvestimento,
-                NomeInstituicao = item.NomeInstituicao,
-                DescricaoLiquidez = item.DescricaoLiquidez,
                 DataVencimento = item.DataVencimento,
                 DescricaoObjetivo = item.DescricaoObjetivo,
                 DescricaoObservacao = item.DescricaoObservacao,
@@ -222,8 +206,5 @@ namespace InvesteBrasil.Investimento.Services
         }
 
         private static DateOnly Hoje() => DateOnly.FromDateTime(DateTime.Today);
-
-        private static string SomenteNumeros(string valor) =>
-            new(valor.Where(char.IsDigit).ToArray());
     }
 }

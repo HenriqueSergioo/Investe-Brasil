@@ -4,10 +4,6 @@ export class InvestimentoDetalheEntity {
   dataCriacao = '';
   dataResgate?: string | null;
   valorInicial = 0;
-  numeroCpf = '';
-  descricaoTipoInvestimento = '';
-  nomeInstituicao = '';
-  descricaoLiquidez = '';
   dataVencimento?: string | null;
   descricaoObjetivo = '';
   descricaoObservacao = '';

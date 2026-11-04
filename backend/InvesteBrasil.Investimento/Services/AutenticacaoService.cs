@@ -60,9 +60,7 @@ namespace InvesteBrasil.Investimento.Services
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>(validacao);
 
                 var email = request.Email.Trim();
-                var login = string.IsNullOrWhiteSpace(request.Usuario) ? email : request.Usuario.Trim();
-
-                var existente = await usuarioRepository.ConsultarPorUsuarioAsync(login)
+                var existente = await usuarioRepository.ConsultarPorUsuarioAsync(email)
                     ?? await usuarioRepository.ConsultarPorEmailAsync(email);
                 if (existente != null)
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>("Este e-mail já está cadastrado.");
@@ -70,7 +68,7 @@ namespace InvesteBrasil.Investimento.Services
                 var usuario = await usuarioRepository.IncluirAsync(new UsuarioEntity
                 {
                     NomeUsuario = request.Nome.Trim(),
-                    DescricaoUsuario = login,
+                    DescricaoUsuario = email,
                     DescricaoSenha = HashSenha.Gerar(request.Senha),
                     DescricaoEmail = email
                 });

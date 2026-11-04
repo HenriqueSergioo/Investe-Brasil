@@ -31,9 +31,6 @@ namespace InvesteBrasil.Investimento.Api.Controllers
 
         [HttpGet("[action]")]
         public async Task<IActionResult> ConsultarInvestimentos(
-            [FromQuery] string? nomeProprietario,
-            [FromQuery] DateOnly? dataInicial,
-            [FromQuery] DateOnly? dataFinal,
             [FromQuery] int pagina = 1,
             [FromQuery] int tamanhoPagina = 10)
         {
@@ -42,9 +39,6 @@ namespace InvesteBrasil.Investimento.Api.Controllers
 
             var resultado = await investimentoService.ConsultarInvestimentosAsync(
                 codigoUsuario,
-                nomeProprietario,
-                dataInicial,
-                dataFinal,
                 pagina,
                 tamanhoPagina);
 
