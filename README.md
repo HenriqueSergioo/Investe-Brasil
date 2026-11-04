@@ -19,7 +19,9 @@ dotnet run --project InvesteBrasil.Investimento.Api
 A API sobe em [http://localhost:5000](http://localhost:5000).  
 Documentação Swagger: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
-A API exige o Neon. Coloque `DATABASE_URL` em `backend/.env` (arquivo local, fora do Git). As tabelas `usuario` e `investimento` já existem no Postgres. Cada investimento fica ligado ao usuário autenticado (`COD_USUARIO`); a lista, o saldo e o resgate usam só os registros daquela conta. As colunas seguem o padrão Feev (`COD_`, `NOM_`, `DAT_`, `VLR_`, `DES_`, `STA_`).
+**Banco de dados:** PostgreSQL real, hospedado no [Neon](https://neon.tech). Cadastro, investimentos e resgates são gravados lá, nas tabelas `usuario` e `investimento`. A conexão é a `DATABASE_URL` em `backend/.env` (arquivo local, fora do Git). Cada investimento fica ligado ao usuário autenticado (`COD_USUARIO`); a lista, o saldo e o resgate usam só os registros daquela conta. As colunas seguem o padrão Feev (`COD_`, `NOM_`, `DAT_`, `VLR_`, `DES_`, `STA_`).
+
+Uma explicação simples do fluxo, das regras e do banco está em [`docs/como-funciona-investebrasil.pdf`](docs/como-funciona-investebrasil.pdf).
 
 ### Frontend
 
@@ -36,6 +38,10 @@ A interface sobe em [http://localhost:4200](http://localhost:4200).
 O cadastro de usuário é feito na tela de login e grava na tabela `usuario`.
 
 Backend e frontend sobem de forma independente. Documentação da API: [http://localhost:5000/swagger](http://localhost:5000/swagger).
+
+## Banco de dados
+
+O sistema usa **PostgreSQL** na nuvem, no **Neon**. Não é mock nem arquivo local: login, cadastro, criação de investimento e resgate são gravados de verdade nas tabelas `usuario` e `investimento`.
 
 ## Regras de negócio
 
@@ -71,7 +77,7 @@ Os testes automatizados (`dotnet test` no backend) cobrem o juros composto, o ar
 
 - ASP.NET Core 8: host HTTP e controllers
 - Swashbuckle: documentação da API
-- Npgsql: acesso ao Postgres/Neon via ADO.NET, no estilo das queries da Feev
+- Npgsql: acesso ao PostgreSQL no Neon via ADO.NET, no estilo das queries da Feev
 - xUnit: testes do cálculo de ganho, imposto e validações
 
 ### Frontend
@@ -93,4 +99,5 @@ frontend/
   src/app/shared/
   src/app/_layout/
 screenshots/
+docs/como-funciona-investebrasil.pdf
 ```

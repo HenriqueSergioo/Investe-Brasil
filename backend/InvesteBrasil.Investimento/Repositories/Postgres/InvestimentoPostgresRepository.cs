@@ -105,14 +105,10 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
                 NomeProprietario = reader.GetString(reader.GetOrdinal("NOM_PROPRIETARIO")),
                 DataCriacao = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_CRIACAO"))),
                 ValorInicial = reader.GetDecimal(reader.GetOrdinal("VLR_INICIAL")),
-                DataVencimento = reader.IsDBNull(reader.GetOrdinal("DAT_VENCIMENTO"))
-                    ? null
-                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_VENCIMENTO"))),
+                DataVencimento = reader.IsDBNull(reader.GetOrdinal("DAT_VENCIMENTO")) ? null : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_VENCIMENTO"))),
                 DescricaoObjetivo = LerTexto(reader, "DES_OBJETIVO"),
                 DescricaoObservacao = LerTexto(reader, "DES_OBSERVACAO"),
-                DataResgate = reader.IsDBNull(reader.GetOrdinal("DAT_RESGATE"))
-                    ? null
-                    : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_RESGATE"))),
+                DataResgate = reader.IsDBNull(reader.GetOrdinal("DAT_RESGATE")) ? null : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DAT_RESGATE"))),
                 SituacaoInvestimento = reader.GetString(reader.GetOrdinal("STA_INVESTIMENTO"))
             };
         }
