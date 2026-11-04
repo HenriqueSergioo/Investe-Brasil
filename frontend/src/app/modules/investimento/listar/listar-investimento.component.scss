@@ -1,0 +1,54 @@
+.consulta {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resumo {
+  display: grid;
+  grid-template-columns: minmax(0, 280px);
+  gap: 16px;
+}
+
+.saldo-card {
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.saldo-card strong {
+  color: var(--verde);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.vazio {
+  text-align: center;
+  color: #9ca3af;
+  padding: 32px 0;
+}
+
+@media (max-width: 768px) {
+  .resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar .botao {
+    width: 100%;
+  }
+}

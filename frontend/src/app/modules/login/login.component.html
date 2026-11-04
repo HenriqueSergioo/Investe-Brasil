@@ -1,0 +1,57 @@
+<section id="page-login">
+  <div class="painel-marca">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <h1>InvesteBrasil</h1>
+    <p>Acompanhe seus investimentos, rendimentos e resgates em um só lugar.</p>
+  </div>
+
+  <form id="card-login" *ngIf="!cadastrando" (ngSubmit)="acessar()">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <h2>Entrar</h2>
+    <p>Use sua conta para acessar o painel.</p>
+
+    <label>
+      E-mail
+      <input type="email" name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
+    </label>
+    <label>
+      Senha
+      <input type="password" name="senha" [(ngModel)]="senha" autocomplete="current-password" required>
+    </label>
+
+    <button type="submit" class="botao primario" [disabled]="carregando">
+      {{ carregando ? 'Entrando...' : 'Acessar' }}
+    </button>
+
+    <button type="button" class="link-cadastro" (click)="mostrarCadastro()">Criar conta</button>
+  </form>
+
+  <form id="card-login" *ngIf="cadastrando" (ngSubmit)="cadastrar()">
+    <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
+    <h2>Criar conta</h2>
+    <p>Preencha os dados para acessar o sistema.</p>
+
+    <label>
+      Nome
+      <input type="text" name="nome" [(ngModel)]="nome" autocomplete="name" required maxlength="200">
+    </label>
+    <label>
+      E-mail
+      <input type="email" name="email" [(ngModel)]="email" autocomplete="email" required maxlength="200">
+    </label>
+    <label>
+      Senha
+      <input type="password" name="senhaCadastro" [(ngModel)]="senha" autocomplete="new-password" required>
+    </label>
+    <label>
+      Confirmar senha
+      <input type="password" name="confirmarSenha" [(ngModel)]="confirmarSenha" autocomplete="new-password" required>
+    </label>
+
+    <button type="submit" class="botao primario" [disabled]="carregando">
+      {{ carregando ? 'Cadastrando...' : 'Cadastrar' }}
+    </button>
+
+    <button type="button" class="link-cadastro" (click)="mostrarLogin()">Já tenho conta</button>
+  </form>
+</section>

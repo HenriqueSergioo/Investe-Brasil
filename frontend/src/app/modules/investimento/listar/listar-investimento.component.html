@@ -1,0 +1,65 @@
+<div class="consulta">
+  <div class="resumo">
+    <article class="card saldo-card">
+      <span class="rotulo">Saldo</span>
+      <strong>{{ formatarMoeda(saldo) }}</strong>
+    </article>
+  </div>
+
+  <article class="card">
+    <div class="toolbar">
+      <button type="button" class="botao primario" (click)="novo()">Novo investimento</button>
+    </div>
+
+    <div class="tabela-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Proprietário</th>
+          <th>Objetivo</th>
+          <th>Valor</th>
+          <th>Saldo atual</th>
+          <th>Situação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginacao.itens">
+          <td>{{ formatarData(item.dataCriacao) }}</td>
+          <td>{{ item.nomeProprietario }}</td>
+          <td>{{ item.descricaoObjetivo || '-' }}</td>
+          <td>{{ formatarMoeda(item.valorInicial) }}</td>
+          <td>{{ formatarMoeda(item.valorSaldoAtual) }}</td>
+          <td>
+            <span class="situacao" [class.investido]="item.situacaoInvestimento === 'Investido'" [class.resgatado]="item.situacaoInvestimento === 'Resgatado'">
+              {{ item.situacaoInvestimento }}
+            </span>
+          </td>
+          <td class="acoes">
+            <button type="button" class="botao-icone primario" title="Visualizar" (click)="visualizar(item)">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c-5.2 0-9.5 3.3-11 7 1.5 3.7 5.8 7 11 7s9.5-3.3 11-7c-1.5-3.7-5.8-7-11-7zm0 11.5A4.5 4.5 0 1 1 16.5 12 4.5 4.5 0 0 1 12 16.5zm0-7A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5z"/>
+              </svg>
+            </button>
+            <button *ngIf="item.situacaoInvestimento === 'Investido'" type="button" class="botao-icone perigo" title="Resgatar" (click)="resgatar(item)">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm7 9.2A3.2 3.2 0 1 0 12 8.8a3.2 3.2 0 0 0 0 6.4zM6.5 9.3a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2zm11 7.6a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="paginacao.itens.length === 0">
+          <td colspan="7" class="vazio">Nenhum investimento encontrado.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <footer class="paginacao" *ngIf="paginacao.totalPaginas > 1">
+      <button type="button" (click)="irParaPagina(pagina - 1)" [disabled]="pagina === 1">Anterior</button>
+      <span>Página {{ paginacao.pagina }} de {{ paginacao.totalPaginas }}</span>
+      <button type="button" (click)="irParaPagina(pagina + 1)" [disabled]="pagina === paginacao.totalPaginas">Próxima</button>
+    </footer>
+  </article>
+</div>

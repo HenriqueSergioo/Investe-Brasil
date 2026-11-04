@@ -1,0 +1,16 @@
+<label class="app-moeda">
+  <span *ngIf="titulo" class="app-moeda-titulo">{{ titulo }}</span>
+  <input
+    #campo
+    type="text"
+    inputmode="numeric"
+    [name]="name"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [required]="required"
+    [value]="texto"
+    maxlength="22"
+    autocomplete="off"
+    (input)="aoDigitar(campo)"
+    (blur)="aoSair()">
+</label>

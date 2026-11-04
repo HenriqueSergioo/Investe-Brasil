@@ -1,0 +1,14 @@
+.vs/
+.vscode/
+*.user
+*.suo
+bin/
+obj/
+node_modules/
+.angular/
+dist/
+coverage/
+*.log
+appsettings.Local.json
+.env
+.env.local

@@ -1,0 +1,29 @@
+<article class="card formulario">
+  <h2>Criar investimento</h2>
+  <p class="rotulo">A data da aplicação pode ser hoje ou anterior. Use o passado para testar ganho e imposto.</p>
+
+  <form (ngSubmit)="salvar()">
+    <div class="grade">
+      <label>
+        Objetivo
+        <select [(ngModel)]="descricaoObjetivo" name="descricaoObjetivo" required>
+          <option value="" disabled>Selecione</option>
+          <option *ngFor="let item of objetivos" [value]="item">{{ item }}</option>
+        </select>
+      </label>
+      <app-data titulo="Data da aplicação" name="dataCriacao" [(ngModel)]="dataCriacao" [maximo]="hoje" [required]="true"></app-data>
+      <app-moeda titulo="Valor" name="valorInicial" [(ngModel)]="valorInicial" [required]="true"></app-moeda>
+      <app-data titulo="Data de retirada" name="dataVencimento" [(ngModel)]="dataVencimento" [minimo]="dataCriacao" [required]="true"></app-data>
+    </div>
+
+    <label class="observacao">
+      Observação
+      <textarea [(ngModel)]="descricaoObservacao" name="descricaoObservacao" maxlength="500" rows="3" placeholder="Opcional"></textarea>
+    </label>
+
+    <div class="acoes-formulario">
+      <button type="submit" class="botao primario" [disabled]="salvando">Investir</button>
+      <button type="button" class="botao secundario" (click)="voltar()">Voltar</button>
+    </div>
+  </form>
+</article>
