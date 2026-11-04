@@ -8,6 +8,8 @@ namespace InvesteBrasil.Investimento.Entities.Responses
 
         public string DescricaoTipoInvestimento { get; set; } = string.Empty;
 
+        public string DescricaoObjetivo { get; set; } = string.Empty;
+
         public string NomeInstituicao { get; set; } = string.Empty;
 
         public DateOnly DataCriacao { get; set; }

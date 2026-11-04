@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace InvesteBrasil.Investimento.Repositories.Postgres
@@ -7,12 +6,9 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
     {
         public NpgsqlConnection Connection { get; }
 
-        public PostgresDbContext(IConfiguration configuration)
+        public PostgresDbContext(NpgsqlDataSource dataSource)
         {
-            var connectionString = NeonConnection.Obter(configuration)
-                ?? throw new InvalidOperationException("Connection string do Neon não configurada.");
-
-            Connection = new NpgsqlConnection(connectionString);
+            Connection = dataSource.CreateConnection();
         }
 
         public async Task AbrirAsync()

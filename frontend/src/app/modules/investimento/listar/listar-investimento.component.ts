@@ -13,9 +13,6 @@ import { InvestimentoService } from '../services/investimento.service';
 })
 export class ListarInvestimentoComponent implements OnInit {
   saldo = 0;
-  nomeProprietario = '';
-  dataInicial = '';
-  dataFinal = '';
   pagina = 1;
   tamanhoPagina = 5;
   paginacao = new PaginacaoEntity<InvestimentoListagemEntity>();
@@ -35,19 +32,14 @@ export class ListarInvestimentoComponent implements OnInit {
       .subscribe(retorno => this.saldo = retorno.saldo);
 
     this.investimentoService.consultarInvestimentos(
-      this.nomeProprietario,
-      this.dataInicial,
-      this.dataFinal,
+      '',
+      '',
+      '',
       this.pagina,
       this.tamanhoPagina
     )
       .pipe(take(1))
       .subscribe(retorno => this.paginacao = retorno);
-  }
-
-  filtrar(): void {
-    this.pagina = 1;
-    this.carregar();
   }
 
   irParaPagina(pagina: number): void {

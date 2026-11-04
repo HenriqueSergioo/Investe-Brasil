@@ -1,5 +1,13 @@
-<aside class="app-sidebar">
-  <a routerLink="/investimentos" class="app-sidebar-logo">
+<button type="button" class="menu-toggle" (click)="alternarMenu()" aria-label="Abrir menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<div class="menu-fundo" *ngIf="menuAberto" (click)="fecharMenu()"></div>
+
+<aside class="app-sidebar" [class.aberto]="menuAberto">
+  <a routerLink="/investimentos" class="app-sidebar-logo" (click)="fecharMenu()">
     <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
     <span>InvesteBrasil</span>
   </a>
@@ -10,14 +18,14 @@
       class="menu-link"
       [routerLink]="item.link"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: item.exato }">
+      [routerLinkActiveOptions]="{ exact: item.exato }"
+      (click)="fecharMenu()">
       <span class="menu-icon" [attr.data-icone]="item.icone"></span>
       <span class="menu-title">{{ item.title }}</span>
     </a>
   </nav>
 
   <div class="app-sidebar-footer">
-    <strong>{{ nome }}</strong>
     <button type="button" (click)="sair()">Sair</button>
   </div>
 </aside>
@@ -25,9 +33,6 @@
 <div class="app-main">
   <header class="app-header">
     <h1>{{ tituloPagina() }}</h1>
-    <div class="usuario">
-      <span class="avatar"></span>
-    </div>
   </header>
   <main>
     <router-outlet></router-outlet>

@@ -21,7 +21,9 @@ namespace InvesteBrasil.Investimento.Services
         private readonly IConfiguration configuration;
         private readonly IUsuarioRepository usuarioRepository;
 
-        public AutenticacaoService(IConfiguration configuration, IUsuarioRepository usuarioRepository)
+        public AutenticacaoService(
+            IConfiguration configuration,
+            IUsuarioRepository usuarioRepository)
         {
             this.configuration = configuration;
             this.usuarioRepository = usuarioRepository;
@@ -35,18 +37,13 @@ namespace InvesteBrasil.Investimento.Services
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>(validacao);
 
-                var usuario = await usuarioRepository.ConsultarPorUsuarioAsync(request.Usuario);
+                var usuario = await usuarioRepository.ConsultarPorUsuarioAsync(request.Usuario)
+                    ?? await usuarioRepository.ConsultarPorEmailAsync(request.Usuario);
                 var senha = HashSenha.Gerar(request.Senha);
                 if (usuario == null || usuario.DescricaoSenha != senha)
-                    return new ResultadoValidacao<UsuarioAutenticadoEntity>("Usuário ou senha inválidos.");
+                    return new ResultadoValidacao<UsuarioAutenticadoEntity>("E-mail ou senha inválidos.");
 
-                return new ResultadoValidacao<UsuarioAutenticadoEntity>(new UsuarioAutenticadoEntity
-                {
-                    CodigoUsuario = usuario.CodigoUsuario,
-                    NomeUsuario = usuario.NomeUsuario,
-                    DescricaoUsuario = usuario.DescricaoUsuario,
-                    Token = GerarToken(usuario)
-                });
+                return new ResultadoValidacao<UsuarioAutenticadoEntity>(Autenticado(usuario));
             }
             catch (Exception ex)
             {
@@ -62,30 +59,39 @@ namespace InvesteBrasil.Investimento.Services
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<UsuarioAutenticadoEntity>(validacao);
 
-                var existente = await usuarioRepository.ConsultarPorUsuarioAsync(request.Usuario);
+                var email = request.Email.Trim();
+                var login = string.IsNullOrWhiteSpace(request.Usuario) ? email : request.Usuario.Trim();
+
+                var existente = await usuarioRepository.ConsultarPorUsuarioAsync(login)
+                    ?? await usuarioRepository.ConsultarPorEmailAsync(email);
                 if (existente != null)
-                    return new ResultadoValidacao<UsuarioAutenticadoEntity>("Este usuário já está cadastrado.");
+                    return new ResultadoValidacao<UsuarioAutenticadoEntity>("Este e-mail já está cadastrado.");
 
                 var usuario = await usuarioRepository.IncluirAsync(new UsuarioEntity
                 {
                     NomeUsuario = request.Nome.Trim(),
-                    DescricaoUsuario = request.Usuario.Trim(),
+                    DescricaoUsuario = login,
                     DescricaoSenha = HashSenha.Gerar(request.Senha),
-                    DescricaoEmail = request.Email.Trim()
+                    DescricaoEmail = email
                 });
 
-                return new ResultadoValidacao<UsuarioAutenticadoEntity>(new UsuarioAutenticadoEntity
-                {
-                    CodigoUsuario = usuario.CodigoUsuario,
-                    NomeUsuario = usuario.NomeUsuario,
-                    DescricaoUsuario = usuario.DescricaoUsuario,
-                    Token = GerarToken(usuario)
-                });
+                return new ResultadoValidacao<UsuarioAutenticadoEntity>(Autenticado(usuario));
             }
             catch (Exception ex)
             {
                 return new ResultadoValidacao<UsuarioAutenticadoEntity>(ex, "[AutenticacaoService] - Erro ao tentar cadastrar o usuário.");
             }
+        }
+
+        private UsuarioAutenticadoEntity Autenticado(UsuarioEntity usuario)
+        {
+            return new UsuarioAutenticadoEntity
+            {
+                CodigoUsuario = usuario.CodigoUsuario,
+                NomeUsuario = usuario.NomeUsuario,
+                DescricaoUsuario = usuario.DescricaoUsuario,
+                Token = GerarToken(usuario)
+            };
         }
 
         private string GerarToken(UsuarioEntity usuario)

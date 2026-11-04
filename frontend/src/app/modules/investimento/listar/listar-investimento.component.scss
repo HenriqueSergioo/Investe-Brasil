@@ -1,6 +1,12 @@
+.consulta {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .resumo {
   display: grid;
-  grid-template-columns: minmax(220px, 280px);
+  grid-template-columns: minmax(0, 280px);
   gap: 16px;
 }
 
@@ -20,34 +26,29 @@
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 16px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.filtros {
-  display: flex;
-  align-items: end;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.filtros label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.busca input {
-  min-width: 180px;
 }
 
 .vazio {
   text-align: center;
   color: #9ca3af;
   padding: 32px 0;
+}
+
+@media (max-width: 768px) {
+  .resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar .botao {
+    width: 100%;
+  }
 }

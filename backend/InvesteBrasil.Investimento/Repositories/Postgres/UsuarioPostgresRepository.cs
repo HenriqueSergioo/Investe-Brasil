@@ -42,6 +42,18 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
             return Mapear(dataReader);
         }
 
+        public async Task<UsuarioEntity?> ConsultarPorEmailAsync(string email)
+        {
+            await using var dataReader = await ExecuteReaderAsync(
+                UsuarioPostgresQuery.ConsultarPorEmail,
+                Parametro("descricaoEmail", email.Trim()));
+
+            if (!await dataReader.ReadAsync())
+                return null;
+
+            return Mapear(dataReader);
+        }
+
         public async Task<UsuarioEntity> IncluirAsync(UsuarioEntity entity)
         {
             var codigoUsuario = await ExecuteScalarAsync(
@@ -58,6 +70,7 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
         private static UsuarioEntity Mapear(Npgsql.NpgsqlDataReader reader)
         {
             var ordinalEmail = reader.GetOrdinal("DES_EMAIL");
+
             return new UsuarioEntity
             {
                 CodigoUsuario = reader.GetInt64(reader.GetOrdinal("COD_USUARIO")),

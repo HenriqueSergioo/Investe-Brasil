@@ -12,7 +12,7 @@ namespace InvesteBrasil.Investimento.Services.Validators
                 return Erro("Os dados de acesso são obrigatórios.");
 
             if (string.IsNullOrWhiteSpace(request.Usuario))
-                return Erro("Informe o usuário.");
+                return Erro("Informe o e-mail.");
 
             if (string.IsNullOrWhiteSpace(request.Senha))
                 return Erro("Informe a senha.");
@@ -30,18 +30,6 @@ namespace InvesteBrasil.Investimento.Services.Validators
 
             if (request.Nome.Trim().Length > 200)
                 return Erro("O nome deve ter no máximo 200 caracteres.");
-
-            if (string.IsNullOrWhiteSpace(request.Usuario))
-                return Erro("Informe o usuário.");
-
-            if (request.Usuario.Trim().Length < 3)
-                return Erro("O usuário deve ter pelo menos 3 caracteres.");
-
-            if (request.Usuario.Trim().Length > 80)
-                return Erro("O usuário deve ter no máximo 80 caracteres.");
-
-            if (request.Usuario.Contains(' '))
-                return Erro("O usuário não pode conter espaços.");
 
             if (string.IsNullOrWhiteSpace(request.Senha))
                 return Erro("Informe a senha.");

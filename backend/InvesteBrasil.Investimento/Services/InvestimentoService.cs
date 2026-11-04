@@ -7,7 +7,6 @@ using InvesteBrasil.Investimento.Entities.Responses;
 using InvesteBrasil.Investimento.Enums;
 using InvesteBrasil.Investimento.Repositories.Postgres.Interfaces;
 using InvesteBrasil.Investimento.Services.Interfaces;
-using InvesteBrasil.Investimento.Services.Notificacao;
 using InvesteBrasil.Investimento.Services.Validators;
 
 namespace InvesteBrasil.Investimento.Services
@@ -15,14 +14,10 @@ namespace InvesteBrasil.Investimento.Services
     public class InvestimentoService : ServiceBase<InvestimentoValidador>, IInvestimentoService
     {
         private readonly IInvestimentoRepository investimentoRepository;
-        private readonly INotificacaoService notificacaoService;
 
-        public InvestimentoService(
-            IInvestimentoRepository investimentoRepository,
-            INotificacaoService notificacaoService)
+        public InvestimentoService(IInvestimentoRepository investimentoRepository)
         {
             this.investimentoRepository = investimentoRepository;
-            this.notificacaoService = notificacaoService;
         }
 
         public async Task<IResultadoValidacao<InvestimentoEntityResponse>> IncluirInvestimentoAsync(long codigoUsuario, IncluirInvestimentoRequestEntity request)
@@ -30,6 +25,12 @@ namespace InvesteBrasil.Investimento.Services
             try
             {
                 var hoje = Hoje();
+                if (request is null)
+                    return new ResultadoValidacao<InvestimentoEntityResponse>(Validator.IncluirInvestimento(null!, hoje));
+
+                if (request.DataCriacao == default)
+                    request.DataCriacao = hoje;
+
                 var validacao = Validator.IncluirInvestimento(request, hoje);
                 if (validacao.OcorreuErro)
                     return new ResultadoValidacao<InvestimentoEntityResponse>(validacao);
@@ -51,7 +52,6 @@ namespace InvesteBrasil.Investimento.Services
                 };
 
                 var incluido = await investimentoRepository.IncluirAsync(entity);
-                await notificacaoService.NotificarCriacaoAsync(incluido);
 
                 return new ResultadoValidacao<InvestimentoEntityResponse>(new InvestimentoEntityResponse { CodigoInvestimento = incluido.CodigoInvestimento });
             }
@@ -138,7 +138,6 @@ namespace InvesteBrasil.Investimento.Services
                 investimento.SituacaoInvestimento = SituacaoInvestimento.Resgatado;
 
                 var detalhe = MapearDetalhe(investimento, request.DataResgate);
-                await notificacaoService.NotificarResgateAsync(investimento, detalhe);
 
                 return new ResultadoValidacao<InvestimentoDetalheEntity>(detalhe);
             }
@@ -177,6 +176,7 @@ namespace InvesteBrasil.Investimento.Services
                 CodigoInvestimento = item.CodigoInvestimento,
                 NomeProprietario = item.NomeProprietario,
                 DescricaoTipoInvestimento = item.DescricaoTipoInvestimento,
+                DescricaoObjetivo = item.DescricaoObjetivo,
                 NomeInstituicao = item.NomeInstituicao,
                 DataCriacao = item.DataCriacao,
                 ValorInicial = item.ValorInicial,

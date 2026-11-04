@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
-import { formatarCpf, formatarData, formatarMoeda, formatarPercentual } from '../../../shared/formatacao';
+import { formatarData, formatarMoeda, formatarPercentual } from '../../../shared/formatacao';
 import { InvestimentoDetalheEntity } from '../entities/investimento-detalhe.entity';
 import { InvestimentoService } from '../services/investimento.service';
 
@@ -41,5 +41,4 @@ export class DetalheInvestimentoComponent implements OnInit {
   formatarMoeda = formatarMoeda;
   formatarData = formatarData;
   formatarPercentual = formatarPercentual;
-  formatarCpf = formatarCpf;
 }

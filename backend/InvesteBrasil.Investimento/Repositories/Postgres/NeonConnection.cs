@@ -30,7 +30,7 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres
             var banco = parsed.AbsolutePath.Trim('/');
             var porta = parsed.IsDefaultPort ? 5432 : parsed.Port;
 
-            return $"Host={parsed.Host};Port={porta};Database={banco};Username={usuario};Password={senha};SSL Mode=Require;Trust Server Certificate=true;Timeout=60";
+            return $"Host={parsed.Host};Port={porta};Database={banco};Username={usuario};Password={senha};SSL Mode=Require;Trust Server Certificate=true;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=10;Timeout=15;Command Timeout=30;No Reset On Close=true";
         }
     }
 }

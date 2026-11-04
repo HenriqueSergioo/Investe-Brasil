@@ -1,20 +1,20 @@
-<section class="page" *ngIf="detalhe">
-  <article class="card formulario">
-    <h2>Resgatar investimento</h2>
+<div class="resgate" *ngIf="detalhe">
+  <h2>Resgatar investimento</h2>
 
-    <form (ngSubmit)="salvar()">
+  <form (ngSubmit)="salvar()">
+    <article class="card formulario">
       <div class="grade">
         <label>
           Código
           <input type="text" [value]="detalhe.codigoInvestimento" disabled>
         </label>
         <label>
-          Proprietário
-          <input type="text" [value]="detalhe.nomeProprietario" disabled>
+          Objetivo
+          <input type="text" [value]="detalhe.descricaoObjetivo" disabled>
         </label>
         <label>
-          Valor
-          <input type="text" [value]="formatarMoeda(detalhe.valorSaldoEsperado)" disabled>
+          Valor investido
+          <input type="text" [value]="formatarMoeda(detalhe.valorInicial)" disabled>
         </label>
         <app-data
           titulo="Data do resgate"
@@ -33,7 +33,10 @@
         <p>Valor líquido: <strong class="destaque">{{ formatarMoeda(detalhe.valorLiquido) }}</strong></p>
       </div>
 
-      <button type="submit" class="botao primario">Salvar</button>
-    </form>
-  </article>
-</section>
+      <div class="acoes-formulario">
+        <button type="submit" class="botao perigo">Resgatar</button>
+        <button type="button" class="botao secundario" (click)="voltar()">Voltar</button>
+      </div>
+    </article>
+  </form>
+</div>

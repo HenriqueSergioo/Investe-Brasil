@@ -37,6 +37,21 @@ namespace InvesteBrasil.Investimento.Tests
         }
 
         [Fact]
+        public void IncluirInvestimento_DataPassada_DevePassar()
+        {
+            var request = new IncluirInvestimentoRequestEntity
+            {
+                NomeProprietario = "Ana",
+                DataCriacao = hoje.AddYears(-1),
+                ValorInicial = 1000,
+                DescricaoObjetivo = "Reserva de emergência",
+                DataVencimento = hoje
+            };
+
+            Assert.False(validador.IncluirInvestimento(request, hoje).OcorreuErro);
+        }
+
+        [Fact]
         public void IncluirInvestimento_DadosValidos_DevePassar()
         {
             var request = new IncluirInvestimentoRequestEntity
@@ -44,29 +59,22 @@ namespace InvesteBrasil.Investimento.Tests
                 NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                NumeroCpf = "529.982.247-25",
-                DescricaoTipoInvestimento = "CDB",
-                NomeInstituicao = "Nubank",
-                DescricaoLiquidez = "Diária",
-                DescricaoObjetivo = "Reserva de emergência"
+                DescricaoObjetivo = "Reserva de emergência",
+                DataVencimento = hoje.AddMonths(6)
             };
 
             Assert.False(validador.IncluirInvestimento(request, hoje).OcorreuErro);
         }
 
         [Fact]
-        public void IncluirInvestimento_CpfIncompleto_DeveFalhar()
+        public void IncluirInvestimento_SemObjetivo_DeveFalhar()
         {
             var request = new IncluirInvestimentoRequestEntity
             {
                 NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                NumeroCpf = "123.456.789",
-                DescricaoTipoInvestimento = "CDB",
-                NomeInstituicao = "Nubank",
-                DescricaoLiquidez = "Diária",
-                DescricaoObjetivo = "Reserva de emergência"
+                DataVencimento = hoje.AddMonths(6)
             };
 
             Assert.True(validador.IncluirInvestimento(request, hoje).OcorreuErro);
@@ -80,10 +88,6 @@ namespace InvesteBrasil.Investimento.Tests
                 NomeProprietario = "Ana",
                 DataCriacao = hoje,
                 ValorInicial = 100,
-                NumeroCpf = "529.982.247-25",
-                DescricaoTipoInvestimento = "CDB",
-                NomeInstituicao = "Nubank",
-                DescricaoLiquidez = "Diária",
                 DescricaoObjetivo = "Reserva de emergência",
                 DataVencimento = hoje.AddDays(-1)
             };

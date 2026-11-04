@@ -1,12 +1,13 @@
-.formulario {
-  max-width: 920px;
-}
-
-form {
+.resgate {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
+  gap: 16px;
+  max-width: 960px;
+}
+
+.resgate h2 {
+  margin: 0;
+  font-size: 1.25rem;
 }
 
 .simulacao {
@@ -14,8 +15,21 @@ form {
   gap: 24px;
   flex-wrap: wrap;
   color: #4b5563;
+  margin-top: 24px;
 }
 
 .destaque {
   color: var(--verde);
+}
+
+.acoes-formulario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.acoes-formulario .botao.secundario {
+  margin-left: auto;
 }

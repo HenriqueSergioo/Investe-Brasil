@@ -1,1 +1,55 @@
+<ng-container *ngIf="alertService.alertas$ | async as alertas">
+<div class="alertas" *ngIf="alertas.length">
+  <div
+    *ngFor="let item of alertas"
+    class="toast"
+    [class.sucesso]="item.tipo === 'sucesso'"
+    [class.alerta]="item.tipo === 'alerta'"
+    role="status"
+  >
+    <span class="icone" aria-hidden="true">
+      <svg *ngIf="item.tipo === 'sucesso'" viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.9-4.9 1.4 1.4z"/>
+      </svg>
+      <svg *ngIf="item.tipo === 'alerta'" viewBox="0 0 24 24">
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+      </svg>
+    </span>
+    <p>{{ item.mensagem }}</p>
+    <button type="button" class="fechar" (click)="fechar(item.id)" aria-label="Fechar">×</button>
+  </div>
+</div>
+</ng-container>
+
+<div
+  class="confirmacao-fundo"
+  *ngIf="alertService.confirmacao$ | async as confirmacao"
+  (click)="cancelarConfirmacao()"
+>
+  <div class="confirmacao" role="dialog" aria-modal="true" [attr.aria-label]="confirmacao.titulo" (click)="$event.stopPropagation()">
+    <span class="icone" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/>
+      </svg>
+    </span>
+    <h2>{{ confirmacao.titulo }}</h2>
+    <p>{{ confirmacao.mensagem }}</p>
+    <div class="acoes">
+      <button type="button" class="botao secundario" (click)="cancelarConfirmacao()">Cancelar</button>
+      <button
+        type="button"
+        class="botao"
+        [class.primario]="!confirmacao.perigo"
+        [class.perigo]="confirmacao.perigo"
+        (click)="aceitarConfirmacao()">
+        {{ confirmacao.textoConfirmar }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="carregando-fundo" *ngIf="loading.visivel$ | async">
+  <div class="carregando" role="status">Aguarde...</div>
+</div>
+
 <router-outlet></router-outlet>

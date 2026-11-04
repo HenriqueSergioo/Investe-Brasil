@@ -11,8 +11,8 @@
     <p>Use sua conta para acessar o painel.</p>
 
     <label>
-      Usuário
-      <input type="text" name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
+      E-mail
+      <input type="email" name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
     </label>
     <label>
       Senha
@@ -29,15 +29,11 @@
   <form id="card-login" *ngIf="cadastrando" (ngSubmit)="cadastrar()">
     <img src="assets/images/logo-investebrasil.svg" alt="InvesteBrasil">
     <h2>Criar conta</h2>
-    <p>Cadastre um usuário para acessar o sistema.</p>
+    <p>Preencha os dados para acessar o sistema.</p>
 
     <label>
       Nome
       <input type="text" name="nome" [(ngModel)]="nome" autocomplete="name" required maxlength="200">
-    </label>
-    <label>
-      Usuário
-      <input type="text" name="usuarioCadastro" [(ngModel)]="usuario" autocomplete="username" required maxlength="80">
     </label>
     <label>
       E-mail

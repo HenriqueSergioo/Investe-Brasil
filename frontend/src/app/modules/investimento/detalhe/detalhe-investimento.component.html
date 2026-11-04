@@ -1,5 +1,4 @@
-<section class="page" *ngIf="detalhe">
-  <article class="card formulario">
+<article class="card formulario" *ngIf="detalhe">
     <div class="cabecalho-detalhe">
       <h2>Detalhe do investimento</h2>
       <span class="situacao" [class.investido]="detalhe.situacaoInvestimento === 'Investido'" [class.resgatado]="detalhe.situacaoInvestimento === 'Resgatado'">
@@ -8,27 +7,23 @@
     </div>
 
     <div class="grade">
-      <label>Proprietário <strong>{{ detalhe.nomeProprietario }}</strong></label>
-      <label>CPF <strong>{{ formatarCpf(detalhe.numeroCpf) }}</strong></label>
-      <label>Tipo <strong>{{ detalhe.descricaoTipoInvestimento || '-' }}</strong></label>
-      <label>Instituição <strong>{{ detalhe.nomeInstituicao || '-' }}</strong></label>
-      <label>Data da aplicação <strong>{{ formatarData(detalhe.dataCriacao) }}</strong></label>
-      <label>Vencimento <strong>{{ formatarData(detalhe.dataVencimento) }}</strong></label>
-      <label>Liquidez <strong>{{ detalhe.descricaoLiquidez || '-' }}</strong></label>
       <label>Objetivo <strong>{{ detalhe.descricaoObjetivo || '-' }}</strong></label>
-      <label>Data de resgate <strong>{{ formatarData(detalhe.dataResgate) }}</strong></label>
-      <label>Valor inicial <strong>{{ formatarMoeda(detalhe.valorInicial) }}</strong></label>
+      <label>Data da aplicação <strong>{{ formatarData(detalhe.dataCriacao) }}</strong></label>
+      <label>Valor <strong>{{ formatarMoeda(detalhe.valorInicial) }}</strong></label>
+      <label>Data de retirada <strong>{{ formatarData(detalhe.dataVencimento) }}</strong></label>
+      <label *ngIf="detalhe.dataResgate">Data de resgate <strong>{{ formatarData(detalhe.dataResgate) }}</strong></label>
       <label>Ganhos <strong>{{ formatarMoeda(detalhe.valorGanhos) }}</strong></label>
       <label>Saldo esperado <strong class="destaque">{{ formatarMoeda(detalhe.valorSaldoEsperado) }}</strong></label>
-      <label>Alíquota <strong>{{ formatarPercentual(detalhe.valorAliquotaImposto) }}</strong></label>
-      <label>Imposto <strong>{{ formatarMoeda(detalhe.valorImposto) }}</strong></label>
+      <label>Imposto ({{ formatarPercentual(detalhe.valorAliquotaImposto) }}) <strong>{{ formatarMoeda(detalhe.valorImposto) }}</strong></label>
       <label>Valor líquido <strong class="destaque">{{ formatarMoeda(detalhe.valorLiquido) }}</strong></label>
-      <label class="observacao-detalhe">Observação <strong>{{ detalhe.descricaoObservacao || '-' }}</strong></label>
+      <label class="observacao-detalhe" *ngIf="detalhe.descricaoObservacao">
+        Observação
+        <strong>{{ detalhe.descricaoObservacao }}</strong>
+      </label>
     </div>
 
     <div class="acoes-formulario">
-      <button type="button" class="botao secundario" (click)="voltar()">Voltar</button>
       <button *ngIf="detalhe.situacaoInvestimento === 'Investido'" type="button" class="botao perigo" (click)="resgatar()">Resgatar</button>
+      <button type="button" class="botao secundario" (click)="voltar()">Voltar</button>
     </div>
   </article>
-</section>

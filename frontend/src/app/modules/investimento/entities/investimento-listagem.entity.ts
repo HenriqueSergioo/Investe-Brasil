@@ -2,6 +2,7 @@ export class InvestimentoListagemEntity {
   codigoInvestimento = 0;
   nomeProprietario = '';
   descricaoTipoInvestimento = '';
+  descricaoObjetivo = '';
   nomeInstituicao = '';
   dataCriacao = '';
   valorInicial = 0;

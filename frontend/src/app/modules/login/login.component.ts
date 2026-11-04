@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
 
   acessar(): void {
     if (!this.usuario.trim() || !this.senha) {
-      this.alertService.erro('Informe usuário e senha.');
+      this.alertService.alerta('Informe e-mail e senha.');
       return;
     }
 
@@ -62,24 +62,29 @@ export class LoginComponent implements OnInit {
         },
         error: erro => {
           this.carregando = false;
-          this.alertService.erro(this.mensagemErro(erro, 'Não foi possível entrar.'));
+          this.alertService.alerta(this.mensagemErro(erro, 'Não foi possível entrar.'));
         }
       });
   }
 
-  cadastrar(): void {
-    if (!this.nome.trim() || !this.usuario.trim() || !this.email.trim() || !this.senha) {
-      this.alertService.erro('Preencha nome, usuário, e-mail e senha.');
+  async cadastrar(): Promise<void> {
+    if (!this.nome.trim() || !this.email.trim() || !this.senha) {
+      this.alertService.alerta('Preencha nome, e-mail e senha.');
       return;
     }
 
     if (this.senha !== this.confirmarSenha) {
-      this.alertService.erro('A confirmação da senha não confere.');
+      this.alertService.alerta('A confirmação da senha não confere.');
+      return;
+    }
+
+    const confirmou = await this.alertService.confirmar('Deseja mesmo criar esta conta?');
+    if (!confirmou) {
       return;
     }
 
     this.carregando = true;
-    this.loginService.cadastrar(this.nome.trim(), this.usuario.trim(), this.email.trim(), this.senha)
+    this.loginService.cadastrar(this.nome.trim(), this.email.trim(), this.senha)
       .pipe(take(1))
       .subscribe({
         next: retorno => {
@@ -88,7 +93,7 @@ export class LoginComponent implements OnInit {
         },
         error: erro => {
           this.carregando = false;
-          this.alertService.erro(this.mensagemErro(erro, 'Não foi possível cadastrar.'));
+          this.alertService.alerta(this.mensagemErro(erro, 'Não foi possível cadastrar.'));
         }
       });
   }

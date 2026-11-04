@@ -48,7 +48,6 @@ namespace InvesteBrasil.Investimento.Tests
             var request = new CadastrarUsuarioRequestEntity
             {
                 Nome = "Ana Souza",
-                Usuario = "ana",
                 Email = "ana@email.com",
                 Senha = "senha12"
             };

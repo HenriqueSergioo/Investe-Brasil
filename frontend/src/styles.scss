@@ -19,6 +19,7 @@ body {
   letter-spacing: 0.01em;
   background: var(--fundo);
   color: var(--texto);
+  overflow-x: hidden;
 }
 
 h1,
@@ -45,6 +46,7 @@ h2 {
   border-radius: 24px;
   padding: 24px;
   box-shadow: 0 8px 30px rgba(17, 24, 39, 0.04);
+  overflow: visible;
 }
 
 .rotulo {
@@ -74,9 +76,16 @@ input:disabled {
 
 .grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 16px;
   width: 100%;
+  overflow: visible;
+}
+
+.tabela-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .grade label {
@@ -211,5 +220,48 @@ th {
 @media (max-width: 768px) {
   .page {
     padding: 16px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .grade {
+    grid-template-columns: 1fr;
+  }
+
+  .tabela-scroll table {
+    min-width: 640px;
+  }
+
+  .acoes-formulario {
+    flex-direction: column;
+  }
+
+  .acoes-formulario .botao,
+  form > .botao {
+    width: 100%;
+  }
+
+  .paginacao {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  input,
+  select,
+  .botao {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 12px;
+  }
+
+  .saldo-card strong {
+    font-size: 1.6rem;
   }
 }

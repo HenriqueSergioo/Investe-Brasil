@@ -6,7 +6,7 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres.Queries
             CREATE TABLE IF NOT EXISTS usuario (
                 ""COD_USUARIO"" BIGSERIAL PRIMARY KEY,
                 ""NOM_USUARIO"" VARCHAR(200) NOT NULL,
-                ""DES_USUARIO"" VARCHAR(80) NOT NULL UNIQUE,
+                ""DES_USUARIO"" VARCHAR(200) NOT NULL UNIQUE,
                 ""DES_SENHA"" VARCHAR(128) NOT NULL,
                 ""DES_EMAIL"" VARCHAR(200) NULL
             );
@@ -37,7 +37,11 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres.Queries
             END $$;
 
             ALTER TABLE usuario ADD COLUMN IF NOT EXISTS ""DES_EMAIL"" VARCHAR(200);
+            ALTER TABLE usuario ALTER COLUMN ""DES_USUARIO"" TYPE VARCHAR(200);
         ";
+
+        internal static string Colunas =>
+            @"""COD_USUARIO"", ""NOM_USUARIO"", ""DES_USUARIO"", ""DES_SENHA"", ""DES_EMAIL""";
 
         internal static string Incluir => @"
             INSERT INTO usuario (""NOM_USUARIO"", ""DES_USUARIO"", ""DES_SENHA"", ""DES_EMAIL"")
@@ -45,16 +49,22 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres.Queries
             RETURNING ""COD_USUARIO"";
         ";
 
-        internal static string ConsultarPorUsuario => @"
-            SELECT ""COD_USUARIO"", ""NOM_USUARIO"", ""DES_USUARIO"", ""DES_SENHA"", ""DES_EMAIL""
+        internal static string ConsultarPorUsuario => $@"
+            SELECT {Colunas}
               FROM usuario
              WHERE LOWER(""DES_USUARIO"") = LOWER(@descricaoUsuario);
         ";
 
-        internal static string ConsultarPorCodigo => @"
-            SELECT ""COD_USUARIO"", ""NOM_USUARIO"", ""DES_USUARIO"", ""DES_SENHA"", ""DES_EMAIL""
+        internal static string ConsultarPorCodigo => $@"
+            SELECT {Colunas}
               FROM usuario
              WHERE ""COD_USUARIO"" = @codigoUsuario;
+        ";
+
+        internal static string ConsultarPorEmail => $@"
+            SELECT {Colunas}
+              FROM usuario
+             WHERE LOWER(""DES_EMAIL"") = LOWER(@descricaoEmail);
         ";
     }
 }

@@ -25,23 +25,14 @@ namespace InvesteBrasil.Investimento.Services.Validators
             if (request.DataCriacao > hoje)
                 return Erro("A data de criação não pode ser futura.");
 
-            if (string.IsNullOrWhiteSpace(request.NumeroCpf) || SomenteNumeros(request.NumeroCpf).Length != 11)
-                return Erro("Informe um CPF válido.");
-
-            if (string.IsNullOrWhiteSpace(request.DescricaoTipoInvestimento))
-                return Erro("Informe o tipo do investimento.");
-
-            if (string.IsNullOrWhiteSpace(request.NomeInstituicao))
-                return Erro("Informe a instituição.");
-
-            if (string.IsNullOrWhiteSpace(request.DescricaoLiquidez))
-                return Erro("Informe a liquidez.");
-
             if (string.IsNullOrWhiteSpace(request.DescricaoObjetivo))
                 return Erro("Informe o objetivo do investimento.");
 
-            if (request.DataVencimento.HasValue && request.DataVencimento.Value < request.DataCriacao)
-                return Erro("A data de vencimento não pode ser anterior à aplicação.");
+            if (!request.DataVencimento.HasValue)
+                return Erro("Informe a data de retirada.");
+
+            if (request.DataVencimento.Value < request.DataCriacao)
+                return Erro("A data de retirada não pode ser anterior à aplicação.");
 
             return Sucesso();
         }

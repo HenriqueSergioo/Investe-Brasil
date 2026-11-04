@@ -35,8 +35,16 @@ export class ResgatarInvestimentoComponent implements OnInit {
       .subscribe(detalhe => this.detalhe = detalhe);
   }
 
-  salvar(): void {
+  async salvar(): Promise<void> {
     if (!this.detalhe) {
+      return;
+    }
+
+    const confirmou = await this.alertService.confirmar(
+      'Deseja mesmo resgatar este investimento? O resgate é total e não pode ser desfeito.',
+      { titulo: 'Resgatar', textoConfirmar: 'Resgatar', perigo: true }
+    );
+    if (!confirmou) {
       return;
     }
 
@@ -51,8 +59,12 @@ export class ResgatarInvestimentoComponent implements OnInit {
         this.alertService.sucesso(
           `Resgate concluído. Valor líquido: ${formatarMoeda(resultado.valorLiquido)}`
         );
-        this.router.navigate(['/investimentos', resultado.codigoInvestimento]);
+        this.voltar();
       });
+  }
+
+  voltar(): void {
+    this.router.navigate(['/investimentos']);
   }
 
   formatarMoeda = formatarMoeda;

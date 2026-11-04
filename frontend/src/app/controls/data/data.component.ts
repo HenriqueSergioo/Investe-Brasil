@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 const MESES = [
@@ -30,7 +30,7 @@ export class DataComponent implements ControlValueAccessor {
 
   valorIso = '';
   texto = '';
-  aberto = false;
+  @HostBinding('class.aberto') aberto = false;
   mesVisivel = new Date().getMonth();
   anoVisivel = new Date().getFullYear();
   diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];

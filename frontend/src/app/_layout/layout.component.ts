@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertService } from '../shared/alert.service';
 import { RecursosMenu } from '../shared/recursos-menu';
 import { SessionService } from '../shared/session.service';
 
@@ -10,29 +11,33 @@ import { SessionService } from '../shared/session.service';
 })
 export class LayoutComponent {
   menu = RecursosMenu;
+  menuAberto = false;
 
   constructor(
     private session: SessionService,
-    private router: Router
+    private router: Router,
+    private alertService: AlertService
   ) {}
 
-  get nome(): string {
-    return this.session.sessao?.nomeUsuario ?? '';
-  }
-
   tituloPagina(): string {
-    if (this.router.url.includes('/novo')) {
-      return 'Novo investimento';
-    }
-
-    if (this.router.url.includes('/resgatar')) {
-      return 'Resgatar';
-    }
-
     return 'Investimentos';
   }
 
-  sair(): void {
+  alternarMenu(): void {
+    this.menuAberto = !this.menuAberto;
+  }
+
+  fecharMenu(): void {
+    this.menuAberto = false;
+  }
+
+  async sair(): Promise<void> {
+    const confirmou = await this.alertService.confirmar('Deseja mesmo sair da conta?');
+    if (!confirmou) {
+      return;
+    }
+
+    this.fecharMenu();
     this.session.limpar();
     this.router.navigate(['/login']);
   }

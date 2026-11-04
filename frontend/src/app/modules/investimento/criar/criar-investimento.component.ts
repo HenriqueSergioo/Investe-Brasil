@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { take } from 'rxjs';
 import { AlertService } from '../../../shared/alert.service';
 import { hojeIso } from '../../../shared/formatacao';
+import { SessionService } from '../../../shared/session.service';
 import { IncluirInvestimentoRequestEntity } from '../entities/requests/incluir-investimento.request.entity';
 import { InvestimentoService } from '../services/investimento.service';
 
@@ -12,100 +13,77 @@ import { InvestimentoService } from '../services/investimento.service';
   styleUrls: ['./criar-investimento.component.scss']
 })
 export class CriarInvestimentoComponent {
-  nomeProprietario = '';
-  numeroCpf = '';
-  descricaoTipoInvestimento = '';
-  nomeInstituicao = '';
-  descricaoLiquidez = '';
   descricaoObjetivo = '';
   descricaoObservacao = '';
+  hoje = hojeIso();
   dataCriacao = hojeIso();
   dataVencimento = '';
-  hoje = hojeIso();
   valorInicial: number | null = null;
-
-  tipos = ['CDB', 'LCI', 'LCA', 'Tesouro Selic', 'Tesouro IPCA', 'Fundo', 'Ações', 'Poupança'];
-  liquideces = ['Diária', 'D+30', 'No vencimento'];
+  salvando = false;
   objetivos = ['Reserva de emergência', 'Aposentadoria', 'Compra de imóvel', 'Educação', 'Outros'];
 
   constructor(
     private investimentoService: InvestimentoService,
     private alertService: AlertService,
+    private session: SessionService,
     private router: Router
   ) {}
 
-  mascararCpf(valor: string): void {
-    const numeros = valor.replace(/\D/g, '').slice(0, 11);
-    if (numeros.length <= 3) {
-      this.numeroCpf = numeros;
-    } else if (numeros.length <= 6) {
-      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3)}`;
-    } else if (numeros.length <= 9) {
-      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6)}`;
-    } else {
-      this.numeroCpf = `${numeros.slice(0, 3)}.${numeros.slice(3, 6)}.${numeros.slice(6, 9)}-${numeros.slice(9)}`;
-    }
-  }
-
-  salvar(): void {
-    if (!this.nomeProprietario.trim()) {
-      this.alertService.erro('Informe o proprietário.');
-      return;
-    }
-
-    if (this.numeroCpf.replace(/\D/g, '').length !== 11) {
-      this.alertService.erro('Informe um CPF válido.');
-      return;
-    }
-
-    if (!this.descricaoTipoInvestimento) {
-      this.alertService.erro('Informe o tipo do investimento.');
-      return;
-    }
-
-    if (!this.nomeInstituicao.trim()) {
-      this.alertService.erro('Informe a instituição.');
+  async salvar(): Promise<void> {
+    if (!this.descricaoObjetivo) {
+      this.alertService.alerta('Informe o objetivo.');
       return;
     }
 
     if (!this.dataCriacao) {
-      this.alertService.erro('Informe a data da aplicação.');
+      this.alertService.alerta('Informe a data da aplicação.');
+      return;
+    }
+
+    if (this.dataCriacao > this.hoje) {
+      this.alertService.alerta('A data da aplicação não pode ser futura.');
       return;
     }
 
     if (!this.valorInicial || this.valorInicial <= 0) {
-      this.alertService.erro('O valor deve ser maior que zero.');
+      this.alertService.alerta('O valor deve ser maior que zero.');
       return;
     }
 
-    if (!this.descricaoLiquidez) {
-      this.alertService.erro('Informe a liquidez.');
+    if (!this.dataVencimento) {
+      this.alertService.alerta('Informe a data de retirada.');
       return;
     }
 
-    if (!this.descricaoObjetivo) {
-      this.alertService.erro('Informe o objetivo.');
+    const confirmou = await this.alertService.confirmar('Deseja mesmo criar este investimento?');
+    if (!confirmou || this.salvando) {
       return;
     }
 
+    this.salvando = true;
     const request = new IncluirInvestimentoRequestEntity({
-      nomeProprietario: this.nomeProprietario.trim(),
-      numeroCpf: this.numeroCpf,
-      descricaoTipoInvestimento: this.descricaoTipoInvestimento,
-      nomeInstituicao: this.nomeInstituicao.trim(),
+      nomeProprietario: this.session.sessao?.nomeUsuario ?? '',
       dataCriacao: this.dataCriacao,
       valorInicial: this.valorInicial,
-      descricaoLiquidez: this.descricaoLiquidez,
-      dataVencimento: this.dataVencimento || null,
+      dataVencimento: this.dataVencimento,
       descricaoObjetivo: this.descricaoObjetivo,
       descricaoObservacao: this.descricaoObservacao.trim()
     });
 
     this.investimentoService.incluirInvestimento(request)
       .pipe(take(1))
-      .subscribe(() => {
-        this.alertService.sucesso('Investimento criado com sucesso.');
-        this.router.navigate(['/investimentos']);
+      .subscribe({
+        next: () => {
+          this.alertService.sucesso('Investimento criado com sucesso.');
+          this.voltar();
+        },
+        error: () => {
+          this.salvando = false;
+        }
       });
+  }
+
+  voltar(): void {
+    this.router.navigate(['/investimentos']);
   }
 }

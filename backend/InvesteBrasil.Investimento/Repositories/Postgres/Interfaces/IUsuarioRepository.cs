@@ -10,6 +10,8 @@ namespace InvesteBrasil.Investimento.Repositories.Postgres.Interfaces
 
         Task<UsuarioEntity?> ConsultarPorCodigoAsync(long codigoUsuario);
 
+        Task<UsuarioEntity?> ConsultarPorEmailAsync(string email);
+
         Task<UsuarioEntity> IncluirAsync(UsuarioEntity entity);
     }
 }

@@ -28,6 +28,7 @@ namespace InvesteBrasil.Investimento.Tests
             Assert.Contains("Username=neondb_owner", conexao);
             Assert.Contains("Password=segredo", conexao);
             Assert.Contains("SSL Mode=Require", conexao);
+            Assert.Contains("Pooling=true", conexao);
             Assert.DoesNotContain("postgresql://", conexao);
         }
 
